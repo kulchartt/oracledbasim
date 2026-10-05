@@ -31,7 +31,7 @@ docker logs -f dbasim-oracle   # รอจนเห็น DATABASE IS READY TO U
 ## 2. ติดตั้ง dbasim
 
 ```bash
-pip install dbasim
+pip install https://github.com/kulchartt/oracledbasim/releases/download/v0.3.0/dbasim-0.3.0-py3-none-any.whl
 ```
 
 ## 3. ตั้งค่า
@@ -54,9 +54,6 @@ dbasim doctor
 | `dbasim hint` | ขอคำใบ้ (หัก 15 คะแนนต่อครั้ง) |
 | `dbasim check` | ตรวจคำตอบ ผ่านแล้วจะเห็นเฉลยแบบ DBA อาวุโส |
 | `dbasim solution --yes` | ยอมแพ้ ดูเฉลย (0 คะแนน) |
-| `dbasim activate <key>` | เปิดใช้ dbasim Pro ด้วย license key ที่ได้ทางอีเมล |
-| `dbasim license` | ดูสถานะ Pro (`--refresh` ตรวจกับร้านค้าใหม่ทันที) |
-| `dbasim deactivate` | ถอด license ออกจากเครื่องนี้ เพื่อย้ายไปใช้เครื่องอื่น |
 | `dbasim lang en` | เปลี่ยนเป็นภาษาอังกฤษ (`dbasim lang th` กลับเป็นไทย หรือตั้ง `DBASIM_LANG`) |
 | `dbasim reset` | ล้างทุกอย่างที่ dbasim สร้าง และคืนค่าที่โจทย์ชวนให้แก้ (cursor_sharing, idle timeout, logon trigger ที่ตั้ง cursor_sharing) |
 
@@ -71,10 +68,12 @@ dbasim doctor
 | s01 | หน้าค้นหาออเดอร์ช้า | ง่าย | ฟรี |
 | s02 | Report ปิดเดือนช้าหลังย้ายข้อมูล | ง่าย | ฟรี |
 | s03 | Batch กลางคืนล้มทุกคืน | ง่าย | ฟรี |
-| s04 | หน้าจอบันทึกการชำระเงินค้าง | กลาง | Pro |
-| s05 | CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่ | กลาง | Pro |
+| s04 | หน้าจอบันทึกการชำระเงินค้าง | กลาง | Pro (เร็วๆ นี้) |
+| s05 | CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่ | กลาง | Pro (เร็วๆ นี้) |
 
-3 โจทย์แรกเล่นฟรีตลอด โจทย์ Pro ต้องมี subscription dbasim Pro ($9/เดือน หรือ $79/ปี) สมัครแล้วจะได้ license key ทางอีเมล สั่ง `dbasim activate <key>` ใช้ได้ 3 เครื่อง (ต้องต่อเน็ตอย่างน้อยทุก 7 วัน เพื่อตรวจว่า subscription ยังใช้งานอยู่)
+3 โจทย์แรกเล่นฟรีตลอด ไม่ต้องสมัครสมาชิกและไม่ต้องใช้ license key ส่วนโจทย์ Pro ยังไม่เปิดขาย (เร็วๆ นี้) กด Watch ที่ repo นี้ไว้เพื่อรับข่าวตอนเปิดตัว
+
+เจอปัญหาหรืออยากเสนอโจทย์ใหม่ เปิด issue ได้ที่ https://github.com/kulchartt/oracledbasim/issues
 
 ## ทดสอบทุกโจทย์กับ Oracle จริง (Windows คลิกเดียว)
 

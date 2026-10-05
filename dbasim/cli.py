@@ -97,6 +97,9 @@ def cmd_list(args):
             _say(f"{s.id:<5}{s.difficulty:<8}{plan:<6}{score:<6}{s.title}{mark}")
         else:
             _say(f"{s.id:<5}{s.difficulty:<7}{plan:<6}{score:<14}{s.title}{mark}")
+    if not license.on_sale() and any(s.premium for s in ALL):
+        _say(t("โจทย์ Pro ยังไม่เปิดขาย (เร็วๆ นี้) ตอนนี้เล่นโจทย์ฟรีได้ทุกข้อ",
+               "Pro scenarios are not on sale yet (coming soon). Every Free scenario is playable now"))
     return 0
 
 
@@ -380,6 +383,10 @@ def cmd_license(args):
     lic = license.load()
     if not lic:
         _say(t("ยังไม่ได้เปิดใช้ dbasim Pro (3 โจทย์แรกเล่นฟรี)", "dbasim Pro is not activated (the first 3 scenarios are free)"))
+        if not license.on_sale():
+            _say(t(f"dbasim Pro ยังไม่เปิดขาย (เร็วๆ นี้) ติดตามได้ที่ {license.PROJECT_URL}",
+                   f"dbasim Pro is not on sale yet (coming soon). Follow {license.PROJECT_URL}"))
+            return 0
         _say(t(f"สมัคร: {license.pricing_url()}  แล้วสั่ง dbasim activate <license-key>",
                f"Subscribe: {license.pricing_url()}  then run dbasim activate <licence-key>"))
         return 0

@@ -131,7 +131,8 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
   <header class="top">
     <span class="brand">dbasim<b>_</b></span>
     <nav class="top-links">
-      <a class="note" href="#pricing">ดูราคา</a>
+      <a class="note" href="#pricing">วิธีติดตั้ง</a>
+      <a class="note" href="https://github.com/kulchartt/oracledbasim">GitHub</a>
       <a class="note" href="en/" hreflang="en" lang="en">English</a>
     </nav>
   </header>
@@ -143,7 +144,7 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
       <p class="sub">dbasim สร้างเหตุการณ์จริงขึ้นใน Oracle บนเครื่องของคุณ มีผู้ใช้จำลองกดระบบอยู่ตลอด คุณหาสาเหตุ แก้ แล้วให้ระบบตรวจว่าแก้ถูกจริงหรือไม่ ไม่ใช่แค่ดูวิดีโอแล้วจบ</p>
       <div class="cta-row">
         <a class="btn" href="#pricing">เริ่มเล่นฟรี</a>
-        <span class="note">ฟรี 3 โจทย์แรก · มีให้เล่นแล้ว 5 โจทย์</span>
+        <span class="note">เล่นฟรี 3 โจทย์ ไม่ต้องสมัคร · โจทย์ Pro เร็วๆ นี้</span>
       </div>
     </div>
 
@@ -190,8 +191,8 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
           <tr><td>หน้าค้นหาออเดอร์ช้า</td><td class="sym">ORDER_SEARCH customer=4127 … (SLOW)</td><td>ง่าย</td><td><span class="pill free">Free</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
           <tr><td>Report ปิดเดือนช้าหลังย้ายข้อมูล</td><td class="sym">MONTH_END report region=1 … (SLOW)</td><td>ง่าย</td><td><span class="pill free">Free</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
           <tr><td>Batch กลางคืนล้มทุกคืน</td><td class="sym">ORA-01652 in tablespace TEMP_RPT</td><td>ง่าย</td><td><span class="pill free">Free</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
-          <tr><td>หน้าจอบันทึกการชำระเงินค้าง</td><td class="sym">ORA-30006 / ORA-00054 · enq: TX - row lock contention</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
-          <tr><td>CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่</td><td class="sym">parse count (hard) พุ่ง</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
+          <tr><td>หน้าจอบันทึกการชำระเงินค้าง</td><td class="sym">ORA-30006 / ORA-00054 · enq: TX - row lock contention</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">เร็วๆ นี้</span></td></tr>
+          <tr><td>CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่</td><td class="sym">parse count (hard) พุ่ง</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">เร็วๆ นี้</span></td></tr>
           <tr><td>Report ยาวล้มกลางทาง</td><td class="sym">ORA-01555: snapshot too old</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">กำลังทำ</span></td></tr>
           <tr><td>ทุกคน connect ไม่ได้</td><td class="sym">ORA-00257: archiver error</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">กำลังทำ</span></td></tr>
           <tr><td>Query เดิม บางทีเร็ว บางทีช้า</td><td class="sym">bind peeking / plan flip</td><td>ยาก</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">กำลังทำ</span></td></tr>
@@ -215,75 +216,70 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
   <section>
     <div class="sec-head">
       <span class="eyebrow">คำถามที่พบบ่อย</span>
-      <h2>ก่อนสมัคร</h2>
+      <h2>ก่อนเริ่มเล่น</h2>
     </div>
     <div class="faq">
       <details><summary>ต้องซื้อ license Oracle ไหม</summary><p>ไม่ต้อง dbasim ใช้ Oracle Database Free ซึ่งคุณดาวน์โหลดจาก Oracle เองภายใต้เงื่อนไขการใช้ฟรีของ Oracle</p></details>
       <details><summary>เครื่องต้องแรงแค่ไหน</summary><p>ต้องมี Docker, RAM ว่างประมาณ 3GB และ disk ว่าง 10GB ถ้าเครื่องช้า ปรับขนาดข้อมูลของโจทย์ให้เล็กลงได้</p></details>
       <details><summary>เอาไปลองกับ DB ที่ทำงานได้ไหม</summary><p>ไม่ได้ และไม่ควร dbasim สร้างและลบ object ใน DB จึงล็อกให้ทำงานกับ Oracle Free เท่านั้น</p></details>
-      <details><summary>ราคาเท่าไหร่</summary><p>3 โจทย์แรก (s01–s03) เล่นฟรีตลอด ไม่ต้องสมัคร ถ้าอยากเล่นทุกโจทย์ สมัคร Pro $9 ต่อเดือน หรือ $79 ต่อปี ยกเลิกได้ทุกเมื่อ</p></details>
-      <details><summary>ยกเลิกแล้วเป็นยังไง</summary><p>Pro ยังใช้ได้จนถึงวันสุดท้ายของรอบที่จ่ายไปแล้ว หลังจากนั้นโจทย์ Pro จะล็อกอีกครั้ง ส่วนโจทย์ฟรี 3 ข้อแรกยังเล่นได้ตามเดิม</p></details>
+      <details><summary>ราคาเท่าไหร่</summary><p>3 โจทย์แรก (s01–s03) เล่นฟรีตลอด ไม่ต้องสมัครสมาชิกและไม่ต้องใส่บัตร ส่วนโจทย์ Pro ยังไม่เปิดขาย</p></details>
+      <details><summary>โจทย์ Pro จะเปิดเมื่อไหร่</summary><p>ยังไม่ได้กำหนดวัน กด Watch ที่ GitHub ของโปรเจกต์ไว้ จะได้รับแจ้งตอนเปิดตัว ระหว่างนี้โจทย์ฟรี 3 ข้อเล่นได้ครบทุกฟีเจอร์ ทั้งคำใบ้ การตรวจคำตอบ และเฉลย</p></details>
+      <details><summary>เจอปัญหาหรืออยากเสนอโจทย์ใหม่</summary><p>เปิด issue ได้ที่ <a href="https://github.com/kulchartt/oracledbasim/issues">GitHub Issues</a> ของโปรเจกต์</p></details>
     </div>
   </section>
 
-  <!-- REPLACE BEFORE LAUNCH: the two checkout links below are placeholders.
-       Swap STORE / MONTHLY-VARIANT-ID / YEARLY-VARIANT-ID for the real Lemon Squeezy checkout URLs. -->
+  <!-- FREE-FIRST RELEASE (2026-10-05): Pro is not on sale. When the Lemon Squeezy store is
+       live, bring the two paid plan cards and checkout links back (see git history). -->
   <section id="pricing">
     <div class="sec-head">
-      <span class="eyebrow">ราคา</span>
-      <h2>เล่นฟรีก่อน ถ้าชอบค่อยสมัคร Pro</h2>
-      <p>3 โจทย์แรกไม่ต้องสมัครอะไรเลย Pro ปลดล็อกทุกโจทย์ รวมถึงโจทย์ใหม่ที่ออกระหว่างที่ยังเป็นสมาชิก</p>
+      <span class="eyebrow">เริ่มเล่น</span>
+      <h2>เล่นฟรีได้เลย ไม่ต้องสมัครอะไร</h2>
+      <p>3 โจทย์แรกเล่นได้ครบทุกฟีเจอร์ ส่วนโจทย์ Pro ยังไม่เปิดขาย</p>
     </div>
-    <div class="plans">
-      <div class="plan">
-        <div class="plan-head"><h3>ฟรี</h3></div>
+    <div class="plans" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="plan best">
+        <div class="plan-head"><h3>ฟรี</h3><span class="pill live">พร้อมเล่น</span></div>
         <p class="price">$0</p>
         <ul>
           <li>โจทย์ s01–s03 เล่นได้ตลอด</li>
+          <li>คำใบ้ ตรวจคำตอบ และเฉลยแบบ DBA อาวุโส</li>
           <li>ไม่ต้องสมัคร ไม่ต้องใส่บัตร</li>
         </ul>
-        <a class="btn ghost" href="#how">ดูวิธีเริ่มเล่น</a>
+        <a class="btn" href="#install">ดูวิธีติดตั้ง</a>
       </div>
       <div class="plan">
-        <div class="plan-head"><h3>Pro รายเดือน</h3></div>
-        <p class="price">$9 <small>/ เดือน</small></p>
+        <div class="plan-head"><h3>Pro</h3><span class="pill soon">เร็วๆ นี้</span></div>
+        <p class="price">ยังไม่เปิดขาย</p>
         <ul>
-          <li>ทุกโจทย์ รวมโจทย์ใหม่ที่ออกระหว่างที่ subscription ยังใช้งาน</li>
-          <li>คำใบ้และเฉลยแบบ DBA อาวุโส</li>
-          <li>ใช้ได้ 3 เครื่อง</li>
-          <li>ยกเลิกได้ทุกเมื่อ</li>
+          <li>โจทย์ระดับกลางถึงยาก เช่น lock ค้าง และ hard parse</li>
+          <li>โจทย์ใหม่ที่ออกเพิ่มเรื่อยๆ</li>
         </ul>
-        <a class="btn" href="https://STORE.lemonsqueezy.com/buy/MONTHLY-VARIANT-ID">สมัครรายเดือน</a>
-      </div>
-      <div class="plan best">
-        <div class="plan-head"><h3>Pro รายปี</h3><span class="pill pro">ประหยัด 27%</span></div>
-        <p class="price">$79 <small>/ ปี</small></p>
-        <ul>
-          <li>ทุกโจทย์ รวมโจทย์ใหม่ที่ออกระหว่างที่ subscription ยังใช้งาน</li>
-          <li>คำใบ้และเฉลยแบบ DBA อาวุโส</li>
-          <li>ใช้ได้ 3 เครื่อง</li>
-          <li>ยกเลิกได้ทุกเมื่อ</li>
-        </ul>
-        <a class="btn" href="https://STORE.lemonsqueezy.com/buy/YEARLY-VARIANT-ID">สมัครรายปี</a>
+        <a class="btn ghost" href="https://github.com/kulchartt/oracledbasim">ติดตามบน GitHub</a>
       </div>
     </div>
 
-    <div class="after">
+    <div class="after" id="install">
       <div>
-        <h3>หลังชำระเงิน</h3>
+        <h3>ติดตั้ง 4 ขั้น</h3>
         <ol>
-          <li><p>ได้ license key ทางอีเมล</p></li>
-          <li><p>ติดตั้ง dbasim ด้วย <code>pip install dbasim</code> (หรือใช้ตัวที่ติดตั้งไว้แล้ว)</p></li>
-          <li><p>เปิดใช้ Pro ด้วยคำสั่ง <code>dbasim activate</code> ตามด้วย key ที่ได้</p></li>
+          <li><p>ติดตั้ง Docker และ Python 3.9 ขึ้นไป</p></li>
+          <li><p>เปิด Oracle Database Free ด้วย Docker (ครั้งแรกดาวน์โหลดหลาย GB)</p></li>
+          <li><p>ติดตั้ง dbasim ด้วย <code>pip</code></p></li>
+          <li><p>สั่ง <code>dbasim doctor</code> ตรวจความพร้อม แล้ว <code>dbasim start s01</code></p></li>
         </ol>
+        <p class="fine">คำสั่งแบบละเอียดและการตั้งค่าบน Windows อยู่ใน <a href="https://github.com/kulchartt/oracledbasim#readme">คู่มือบน GitHub</a></p>
       </div>
-      <div class="term" role="img" aria-label="ตัวอย่างคำสั่งติดตั้งและเปิดใช้ license">
-        <div class="bar"><span>terminal</span><span>Pro</span></div>
-<pre><span class="t-cmd">$ pip install dbasim</span>
-<span class="t-cmd">$ dbasim activate &lt;license-key&gt;</span></pre>
+      <div class="term" role="img" aria-label="คำสั่งติดตั้ง dbasim และเริ่มโจทย์แรก">
+        <div class="bar"><span>terminal</span><span>ฟรี</span></div>
+<pre><span class="t-cmd">$ docker run -d --name dbasim-oracle -p 1521:1521 \
+    -e ORACLE_PWD=ChangeMe123 \
+    container-registry.oracle.com/database/free:latest</span>
+<span class="t-cmd">$ pip install https://github.com/kulchartt/oracledbasim/releases/download/v0.3.0/dbasim-0.3.0-py3-none-any.whl</span>
+<span class="t-cmd">$ export DBASIM_ADMIN_PASSWORD=ChangeMe123</span>
+<span class="t-cmd">$ dbasim doctor</span>
+<span class="t-cmd">$ dbasim start s01</span></pre>
       </div>
     </div>
-    <p class="fine">ชำระเป็น USD ผ่าน Lemon Squeezy ซึ่งเป็นผู้ขายตามกฎหมาย (merchant of record) ภาษีคำนวณตอนชำระเงิน</p>
   </section>
 
   <footer>

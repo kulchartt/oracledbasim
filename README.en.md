@@ -33,7 +33,7 @@ between you and Oracle.
 ## 2. Install dbasim
 
 ```bash
-pip install dbasim
+pip install https://github.com/kulchartt/oracledbasim/releases/download/v0.3.0/dbasim-0.3.0-py3-none-any.whl
 ```
 
 ## 3. Configure
@@ -57,9 +57,6 @@ dbasim doctor
 | `dbasim hint` | Get a hint (-15 points each) |
 | `dbasim check` | Check your fix; once solved you see a senior DBA's write-up |
 | `dbasim solution --yes` | Give up and see the solution (0 points) |
-| `dbasim activate <key>` | Activate dbasim Pro with the licence key from your email |
-| `dbasim license` | Show Pro status (`--refresh` re-checks with the store now) |
-| `dbasim deactivate` | Remove the licence from this computer so you can use it on another |
 | `dbasim lang en` / `th` | Switch language (or set `DBASIM_LANG`) |
 | `dbasim reset` | Remove everything dbasim created and undo settings the scenarios invite you to change |
 
@@ -74,10 +71,11 @@ No AWR/ASH needed.
 | s01 | Order search page is slow | Easy | Free |
 | s02 | Month-end report slow after data migration | Easy | Free |
 | s03 | The nightly batch fails every night | Easy | Free |
-| s04 | Payment entry screen hangs | Medium | Pro |
-| s05 | CPU spikes after a new app release | Medium | Pro |
+| s04 | Payment entry screen hangs | Medium | Pro (coming soon) |
+| s05 | CPU spikes after a new app release | Medium | Pro (coming soon) |
 
-The first three scenarios are free forever. Pro scenarios need a dbasim Pro subscription
-($9/month or $79/year). You get a licence key by email; run `dbasim activate <key>`. A key works
-on 3 computers, and dbasim needs to go online at least once every 7 days to confirm the
-subscription is still active.
+The first three scenarios are free forever: no sign-up and no licence key. Pro scenarios are
+not on sale yet (coming soon). Watch this repository to hear when they launch.
+
+Found a problem, or want to suggest a scenario? Open an issue at
+https://github.com/kulchartt/oracledbasim/issues

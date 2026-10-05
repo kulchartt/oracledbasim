@@ -131,7 +131,8 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
   <header class="top">
     <span class="brand">dbasim<b>_</b></span>
     <nav class="top-links">
-      <a class="note" href="#pricing">Pricing</a>
+      <a class="note" href="#pricing">Install</a>
+      <a class="note" href="https://github.com/kulchartt/oracledbasim">GitHub</a>
       <a class="note" href="../" hreflang="th" lang="th">ภาษาไทย</a>
     </nav>
   </header>
@@ -143,7 +144,7 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
       <p class="sub">dbasim breaks a real Oracle database on your own machine while simulated users keep hammering the app. You find the cause, fix it, and dbasim checks whether the fix actually holds. Hands on the keyboard, not another video course.</p>
       <div class="cta-row">
         <a class="btn" href="#pricing">Start free</a>
-        <span class="note">First 3 scenarios free · 5 playable today</span>
+        <span class="note">3 scenarios free, no sign-up · Pro scenarios coming soon</span>
       </div>
     </div>
 
@@ -190,8 +191,8 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
           <tr><td>Order search page is slow</td><td class="sym">ORDER_SEARCH customer=4127 … (SLOW)</td><td>Easy</td><td><span class="pill free">Free</span></td><td><span class="pill live">Playable</span></td></tr>
           <tr><td>Month-end report slow after a data migration</td><td class="sym">MONTH_END report region=1 … (SLOW)</td><td>Easy</td><td><span class="pill free">Free</span></td><td><span class="pill live">Playable</span></td></tr>
           <tr><td>Nightly batch fails every night</td><td class="sym">ORA-01652 in tablespace TEMP_RPT</td><td>Easy</td><td><span class="pill free">Free</span></td><td><span class="pill live">Playable</span></td></tr>
-          <tr><td>Payment entry screen hangs</td><td class="sym">ORA-30006 / ORA-00054 · enq: TX - row lock contention</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill live">Playable</span></td></tr>
-          <tr><td>CPU spikes after a new app release</td><td class="sym">parse count (hard) spikes</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill live">Playable</span></td></tr>
+          <tr><td>Payment entry screen hangs</td><td class="sym">ORA-30006 / ORA-00054 · enq: TX - row lock contention</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">Coming soon</span></td></tr>
+          <tr><td>CPU spikes after a new app release</td><td class="sym">parse count (hard) spikes</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">Coming soon</span></td></tr>
           <tr><td>Long report dies halfway through</td><td class="sym">ORA-01555: snapshot too old</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">In progress</span></td></tr>
           <tr><td>Nobody can connect</td><td class="sym">ORA-00257: archiver error</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">In progress</span></td></tr>
           <tr><td>Same query, sometimes fast, sometimes slow</td><td class="sym">bind peeking / plan flip</td><td>Hard</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">In progress</span></td></tr>
@@ -215,75 +216,71 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
   <section>
     <div class="sec-head">
       <span class="eyebrow">FAQ</span>
-      <h2>Before you subscribe</h2>
+      <h2>Before you start</h2>
     </div>
     <div class="faq">
       <details><summary>Do I need an Oracle license?</summary><p>No. dbasim runs on Oracle Database Free, which you download from Oracle yourself under Oracle's free-use terms.</p></details>
       <details><summary>How powerful does my machine need to be?</summary><p>You need Docker, about 3 GB of free RAM and 10 GB of free disk. On a slower machine you can shrink the scenario data size.</p></details>
       <details><summary>Can I run it against a database at work?</summary><p>No, and you shouldn't. dbasim creates and drops objects, so it is locked to Oracle Free only.</p></details>
-      <details><summary>How much does it cost?</summary><p>The first 3 scenarios (s01–s03) are free forever, no sign-up needed. To play everything, Pro is $9 a month or $79 a year. Cancel anytime.</p></details>
-      <details><summary>What happens if I cancel?</summary><p>Pro keeps working until the end of the period you already paid for. After that the Pro scenarios lock again, and the 3 free scenarios keep working as before.</p></details>
+      <details><summary>How much does it cost?</summary><p>The first 3 scenarios (s01–s03) are free forever, with no sign-up and no card. Pro scenarios are not on sale yet.</p></details>
+      <details><summary>When will Pro launch?</summary><p>No date yet. Watch the project on GitHub to hear when it does. Until then the 3 free scenarios come with everything: hints, grading and the write-ups.</p></details>
+      <details><summary>Found a problem, or want to suggest a scenario?</summary><p>Open an issue on the project's <a href="https://github.com/kulchartt/oracledbasim/issues">GitHub Issues</a>.</p></details>
     </div>
   </section>
 
-  <!-- REPLACE BEFORE LAUNCH: the two checkout links below are placeholders.
-       Swap STORE / MONTHLY-VARIANT-ID / YEARLY-VARIANT-ID for the real Lemon Squeezy checkout URLs. -->
+  <!-- FREE-FIRST RELEASE (2026-10-05): Pro is not on sale. When the Lemon Squeezy store is
+       live, bring the two paid plan cards and checkout links back (see git history). -->
   <section id="pricing">
     <div class="sec-head">
-      <span class="eyebrow">Pricing</span>
-      <h2>Play free first. Go Pro if it clicks.</h2>
-      <p>The first 3 scenarios need no account at all. Pro unlocks every scenario, including new ones released while you're subscribed.</p>
+      <span class="eyebrow">Get started</span>
+      <h2>Play free now. No sign-up.</h2>
+      <p>The first 3 scenarios come with every feature. Pro scenarios are not on sale yet.</p>
     </div>
-    <div class="plans">
-      <div class="plan">
-        <div class="plan-head"><h3>Free</h3></div>
+    <div class="plans" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="plan best">
+        <div class="plan-head"><h3>Free</h3><span class="pill live">Playable</span></div>
         <p class="price">$0</p>
         <ul>
           <li>Scenarios s01–s03, forever</li>
+          <li>Hints, grading and senior DBA write-ups</li>
           <li>No sign-up, no card</li>
         </ul>
-        <a class="btn ghost" href="#how">See how to start</a>
+        <a class="btn" href="#install">See how to install</a>
       </div>
       <div class="plan">
-        <div class="plan-head"><h3>Pro Monthly</h3></div>
-        <p class="price">$9 <small>/ month</small></p>
+        <div class="plan-head"><h3>Pro</h3><span class="pill soon">Coming soon</span></div>
+        <p class="price">Not on sale yet</p>
         <ul>
-          <li>Every scenario, including new ones released while your subscription is active</li>
-          <li>Hints and senior DBA walkthroughs</li>
-          <li>Use on 3 machines</li>
-          <li>Cancel anytime</li>
+          <li>Medium to hard scenarios, such as lock contention and hard parsing</li>
+          <li>New scenarios added over time</li>
         </ul>
-        <a class="btn" href="https://STORE.lemonsqueezy.com/buy/MONTHLY-VARIANT-ID">Get Pro Monthly</a>
-      </div>
-      <div class="plan best">
-        <div class="plan-head"><h3>Pro Yearly</h3><span class="pill pro">Save 27%</span></div>
-        <p class="price">$79 <small>/ year</small></p>
-        <ul>
-          <li>Every scenario, including new ones released while your subscription is active</li>
-          <li>Hints and senior DBA walkthroughs</li>
-          <li>Use on 3 machines</li>
-          <li>Cancel anytime</li>
-        </ul>
-        <a class="btn" href="https://STORE.lemonsqueezy.com/buy/YEARLY-VARIANT-ID">Get Pro Yearly</a>
+        <a class="btn ghost" href="https://github.com/kulchartt/oracledbasim">Follow on GitHub</a>
       </div>
     </div>
 
-    <div class="after">
+    <div class="after" id="install">
       <div>
-        <h3>After you pay</h3>
+        <h3>Install in 4 steps</h3>
         <ol>
-          <li><p>Your license key arrives by email.</p></li>
-          <li><p>Install dbasim with <code>pip install dbasim</code> (or use the copy you already have).</p></li>
-          <li><p>Activate Pro with <code>dbasim activate</code> followed by your key.</p></li>
+          <li><p>Install Docker and Python 3.9 or newer.</p></li>
+          <li><p>Start Oracle Database Free with Docker (the first download is several GB).</p></li>
+          <li><p>Install dbasim with <code>pip</code>.</p></li>
+          <li><p>Run <code>dbasim doctor</code> to check the setup, then <code>dbasim start s01</code>.</p></li>
         </ol>
+        <p class="fine">Full commands and the Windows setup are in the <a href="https://github.com/kulchartt/oracledbasim/blob/main/README.en.md">guide on GitHub</a>.</p>
       </div>
-      <div class="term" role="img" aria-label="Sample commands to install dbasim and activate a license">
-        <div class="bar"><span>terminal</span><span>Pro</span></div>
-<pre><span class="t-cmd">$ pip install dbasim</span>
-<span class="t-cmd">$ dbasim activate &lt;license-key&gt;</span></pre>
+      <div class="term" role="img" aria-label="Commands to install dbasim and start the first scenario">
+        <div class="bar"><span>terminal</span><span>Free</span></div>
+<pre><span class="t-cmd">$ docker run -d --name dbasim-oracle -p 1521:1521 \
+    -e ORACLE_PWD=ChangeMe123 \
+    container-registry.oracle.com/database/free:latest</span>
+<span class="t-cmd">$ pip install https://github.com/kulchartt/oracledbasim/releases/download/v0.3.0/dbasim-0.3.0-py3-none-any.whl</span>
+<span class="t-cmd">$ export DBASIM_ADMIN_PASSWORD=ChangeMe123</span>
+<span class="t-cmd">$ dbasim lang en</span>
+<span class="t-cmd">$ dbasim doctor</span>
+<span class="t-cmd">$ dbasim start s01</span></pre>
       </div>
     </div>
-    <p class="fine">Prices are in USD. Payments are handled by Lemon Squeezy, the merchant of record. Tax is calculated at checkout.</p>
   </section>
 
   <footer>

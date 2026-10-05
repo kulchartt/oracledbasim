@@ -70,6 +70,37 @@ def test_refuses_when_store_not_configured(monkeypatch):
     api = FakeAPI(activate=activated(), deactivate={"deactivated": True})
     with pytest.raises(license.LicenseError):
         license.activate("ABCD-1234-EFGH-5678", post=api)
+    assert api.calls == []  # no seat is taken on a key we could not accept
+
+
+# ---- free-first release: Pro not on sale yet (store IDs unset) --------------
+
+@pytest.fixture
+def not_on_sale(monkeypatch):
+    monkeypatch.delenv("DBASIM_LS_STORE_ID")
+    monkeypatch.delenv("DBASIM_LS_PRODUCT_ID")
+
+
+def test_pro_scenario_says_coming_soon_when_not_on_sale(not_on_sale, capsys):
+    assert cli.main(["start", "s04"]) == 1
+    out = capsys.readouterr().out
+    assert "เร็วๆ นี้" in out and "s01" in out
+    assert "$9" not in out and "dbasim activate" not in out
+    assert state.load()["active"] is None
+
+
+def test_list_and_license_say_coming_soon_when_not_on_sale(not_on_sale, capsys):
+    cli.main(["list"])
+    assert "เร็วๆ นี้" in capsys.readouterr().out
+    assert cli.main(["license"]) == 0
+    out = capsys.readouterr().out
+    assert "เร็วๆ นี้" in out and "dbasim activate" not in out
+
+
+def test_coming_soon_in_english(not_on_sale, monkeypatch, capsys):
+    monkeypatch.setenv("DBASIM_LANG", "en")
+    assert cli.main(["start", "s05"]) == 1
+    assert "coming soon" in capsys.readouterr().out
 
 
 def test_require_pro_without_licence_explains_how_to_buy():

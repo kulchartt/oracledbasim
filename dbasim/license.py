@@ -22,7 +22,8 @@ API = "https://api.lemonsqueezy.com/v1/licenses/"
 # A key from any other store or product is refused, so they must be set.
 STORE_ID = None
 PRODUCT_ID = None
-PRICING_URL = "https://dbasim.example/#pricing"
+PRICING_URL = "https://kulchartt.github.io/oracledbasim/#pricing"
+PROJECT_URL = "https://github.com/kulchartt/oracledbasim"
 
 RECHECK_SECONDS = 24 * 3600          # online re-check at most once a day
 OFFLINE_GRACE_SECONDS = 7 * 24 * 3600  # keep working this long without internet
@@ -40,6 +41,23 @@ def _ids():
 
 def pricing_url():
     return os.environ.get("DBASIM_PRICING_URL") or PRICING_URL
+
+
+def on_sale():
+    """Pro can be bought only once the store IDs are set (free-first release: they are not)."""
+    store, product = _ids()
+    return bool(store and product)
+
+
+def coming_soon_message():
+    return t(
+        "โจทย์นี้อยู่ใน dbasim Pro ซึ่งยังไม่เปิดขาย (เร็วๆ นี้)\n"
+        "  ตอนนี้เล่นได้ฟรี 3 โจทย์: s01, s02, s03\n"
+        f"  ติดตามข่าวเปิดตัว Pro: {PROJECT_URL}",
+        "This scenario is part of dbasim Pro, which is not on sale yet (coming soon).\n"
+        "  Free to play today: s01, s02, s03\n"
+        f"  Follow the project for the Pro launch: {PROJECT_URL}",
+    )
 
 
 def _path():
@@ -119,6 +137,12 @@ def activate(key, post=_post):
     key = key.strip()
     if not key:
         raise LicenseError(t("ใส่ license key ด้วย", "Please give a licence key"))
+    if not on_sale():
+        # never take a seat on a key we could not accept anyway
+        raise LicenseError(t(
+            f"dbasim Pro ยังไม่เปิดขาย (เร็วๆ นี้) ติดตามได้ที่ {PROJECT_URL}",
+            f"dbasim Pro is not on sale yet (coming soon). Follow {PROJECT_URL}",
+        ))
     old = load()
     if old and old.get("key") == key and old.get("instance_id"):
         return refresh(post=post)
@@ -204,6 +228,8 @@ def deactivate(post=_post):
 
 
 def need_pro_message():
+    if not on_sale():
+        return coming_soon_message()
     return t(
         "โจทย์นี้อยู่ใน dbasim Pro (3 โจทย์แรกเล่นฟรี)\n"
         f"  สมัคร: {pricing_url()}  รายเดือน $9 หรือรายปี $79\n"
