@@ -12,6 +12,7 @@ def home(tmp_path, monkeypatch):
     monkeypatch.setenv("DBASIM_LS_STORE_ID", STORE)
     monkeypatch.setenv("DBASIM_LS_PRODUCT_ID", PRODUCT)
     monkeypatch.delenv("DBASIM_LANG", raising=False)
+    state.save({**state.load(), "lang": "th"})  # these tests assert on the Thai copy; English is the default
     return tmp_path
 
 
@@ -193,3 +194,21 @@ def test_every_scenario_has_english_text(monkeypatch):
         texts = [str(s.title), str(s.difficulty), str(s.story), str(s.solution)] + [str(h) for h in s.hints]
         for text in texts:
             assert text and not any("฀" <= ch <= "๿" for ch in text), (s.id, text[:60])
+
+
+def test_default_language_is_english(tmp_path, monkeypatch, capsys):
+    from dbasim import i18n
+    monkeypatch.setenv("DBASIM_HOME", str(tmp_path / "fresh-install"))
+    monkeypatch.delenv("DBASIM_LANG", raising=False)
+    assert i18n.lang() == "en"
+    for argv in (["list"], ["lang"], ["status"], ["license"]):
+        cli.main(argv)
+    out = capsys.readouterr().out
+    assert "Scenario" in out and "Language: English" in out
+    assert not any(0x0E00 <= ord(ch) <= 0x0E7F for ch in out), out  # no Thai left
+
+
+def test_unknown_language_falls_back_to_english(monkeypatch):
+    from dbasim import i18n
+    monkeypatch.setenv("DBASIM_LANG", "xx")
+    assert i18n.lang() == "en"

@@ -1,4 +1,4 @@
-"""Thai is the default language; English via DBASIM_LANG=en or `dbasim lang en`.
+"""English is the default language; Thai via DBASIM_LANG=th or `dbasim lang th`.
 
 Two helpers:
   t(th, en)  pick a string now - for text built at run time (criteria, messages)
@@ -7,6 +7,7 @@ Two helpers:
 import os
 
 LANGS = ("th", "en")
+DEFAULT = "en"
 
 
 def lang():
@@ -14,8 +15,8 @@ def lang():
     if not value:
         from . import state
         value = state.load().get("lang")
-    value = (value or "th").strip().lower()[:2]
-    return value if value in LANGS else "th"
+    value = (value or DEFAULT).strip().lower()[:2]
+    return value if value in LANGS else DEFAULT
 
 
 def t(th, en):

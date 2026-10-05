@@ -1,96 +1,80 @@
-# dbasim — ฝึกแก้ปัญหา Oracle จากสถานการณ์จริง
+# dbasim — learn to fix Oracle from real incidents
 
-[English](README.en.md)
+[ภาษาไทย](https://github.com/kulchartt/oracledbasim/blob/main/README.th.md)
 
-dbasim สร้าง "เหตุการณ์ DB มีปัญหา" ขึ้นใน Oracle Database Free บนเครื่องของคุณเอง
-มีแอปจำลองที่มีคนใช้งานอยู่ตลอด ให้คุณหาสาเหตุ แก้ปัญหา แล้วให้ระบบตรวจว่าแก้ถูกหรือไม่
+dbasim plants a "the database is broken" incident in Oracle Database Free on your own computer.
+A simulated app keeps using it the whole time. You find the cause, fix it, and dbasim checks
+whether your fix really worked.
 
-> ⚠️ dbasim จะสร้างและลบ user / tablespace ใน DB ที่ชี้ไป ใช้กับ Oracle Free ในเครื่องตัวเองเท่านั้น
-> โปรแกรมจะไม่ยอมทำงานกับ DB ที่ไม่ใช่ Free และจะไม่ลบ user `SHOP` ที่ไม่ได้สร้างเอง
+> ⚠️ dbasim creates and drops users and tablespaces in the database it points at. Only use it with
+> Oracle Free on your own machine. It refuses to run against anything that is not Free and never
+> drops a `SHOP` user it did not create.
 
-## สิ่งที่ต้องมี
+## Requirements
 
-- Docker (Windows ใช้ Docker Desktop + WSL2)
-- RAM ว่างประมาณ 3GB และ disk ว่าง 10GB
-- Python 3.9 ขึ้นไป
+- Docker (on Windows: Docker Desktop + WSL2)
+- About 3GB free RAM and 10GB free disk
+- Python 3.9 or newer
 
-## 1. เปิด Oracle Database Free
+## 1. Start Oracle Database Free
 
 ```bash
 docker run -d --name dbasim-oracle -p 1521:1521 \
   -e ORACLE_PWD=ChangeMe123 \
   container-registry.oracle.com/database/free:latest
 
-docker logs -f dbasim-oracle   # รอจนเห็น DATABASE IS READY TO USE!
+docker logs -f dbasim-oracle   # wait for DATABASE IS READY TO USE!
 ```
 
-การดาวน์โหลดและใช้ Oracle Database Free อยู่ภายใต้
-[Oracle Free Use Terms and Conditions](https://www.oracle.com/downloads/licenses/oracle-free-license.html)
-ระหว่างคุณกับ Oracle โดยตรง
+Downloading and using Oracle Database Free is governed by the
+[Oracle Free Use Terms and Conditions](https://www.oracle.com/downloads/licenses/oracle-free-license.html),
+between you and Oracle.
 
-## 2. ติดตั้ง dbasim
+## 2. Install dbasim
 
 ```bash
 pip install dbasim
 ```
 
-## 3. ตั้งค่า
+## 3. Configure
 
 ```bash
 export DBASIM_ADMIN_PASSWORD=ChangeMe123          # Windows PowerShell: $env:DBASIM_ADMIN_PASSWORD="ChangeMe123"
-export DBASIM_DSN=localhost:1521/FREEPDB1           # ค่า default
-export DBASIM_SCALE=0.3                             # ถ้าเครื่องช้า ลดขนาดข้อมูลลง
+export DBASIM_DSN=localhost:1521/FREEPDB1           # default
+export DBASIM_SCALE=0.3                             # smaller data for slow machines
 dbasim doctor
 ```
 
-## 4. เล่น
+## 4. Play
 
-| คำสั่ง | ทำอะไร |
+| Command | What it does |
 | --- | --- |
-| `dbasim list` | ดูโจทย์ทั้งหมดและคะแนน |
-| `dbasim start s01` | เริ่มโจทย์ (สร้างปัญหา + เปิดแอปจำลอง) |
-| `dbasim logs` | ดู log ของแอป เหมือนตอนรับ ticket |
-| `dbasim status` | เวลาที่ใช้ คะแนน และรหัสผ่าน user SHOP |
-| `dbasim hint` | ขอคำใบ้ (หัก 15 คะแนนต่อครั้ง) |
-| `dbasim check` | ตรวจคำตอบ ผ่านแล้วจะเห็นเฉลยแบบ DBA อาวุโส |
-| `dbasim solution --yes` | ยอมแพ้ ดูเฉลย (0 คะแนน) |
-| `dbasim lang en` | เปลี่ยนเป็นภาษาอังกฤษ (`dbasim lang th` กลับเป็นไทย หรือตั้ง `DBASIM_LANG`) |
-| `dbasim reset` | ล้างทุกอย่างที่ dbasim สร้าง และคืนค่าที่โจทย์ชวนให้แก้ (cursor_sharing, idle timeout, logon trigger ที่ตั้ง cursor_sharing) |
+| `dbasim list` | List scenarios and your scores |
+| `dbasim start s01` | Start a scenario (plants the problem + starts the simulated app) |
+| `dbasim logs` | Read the app's log, like when a ticket comes in |
+| `dbasim status` | Time spent, score, and the password of user SHOP |
+| `dbasim hint` | Get a hint (-15 points each) |
+| `dbasim check` | Check your fix; once solved you see a senior DBA's write-up |
+| `dbasim solution --yes` | Give up and see the solution (0 points) |
+| `dbasim lang th` / `en` | Switch language: English is the default (or set `DBASIM_LANG`) |
+| `dbasim reset` | Remove everything dbasim created and undo settings the scenarios invite you to change |
 
-ใช้เครื่องมืออะไรแก้ก็ได้ เช่น SQL*Plus, SQLcl, SQL Developer ต่อด้วย SYSTEM เข้า `FREEPDB1`
-ทุกโจทย์แก้ได้ด้วยเครื่องมือที่มีใน Oracle Free (`v$` views, `DBMS_XPLAN`, trace)
-ไม่ต้องใช้ AWR/ASH
+Use any tool you like: SQL*Plus, SQLcl, SQL Developer, connected as SYSTEM to `FREEPDB1`.
+Every scenario can be solved with what Oracle Free ships (`v$` views, `DBMS_XPLAN`, trace).
+No AWR/ASH needed.
 
-## โจทย์ที่มีตอนนี้
+## Scenarios
 
-| ID | โจทย์ | ระดับ | แผน |
+| ID | Scenario | Level | Plan |
 | --- | --- | --- | --- |
-| s01 | หน้าค้นหาออเดอร์ช้า | ง่าย | ฟรี |
-| s02 | Report ปิดเดือนช้าหลังย้ายข้อมูล | ง่าย | ฟรี |
-| s03 | Batch กลางคืนล้มทุกคืน | ง่าย | ฟรี |
-| s04 | หน้าจอบันทึกการชำระเงินค้าง | กลาง | Pro (เร็วๆ นี้) |
-| s05 | CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่ | กลาง | Pro (เร็วๆ นี้) |
+| s01 | Order search page is slow | Easy | Free |
+| s02 | Month-end report slow after data migration | Easy | Free |
+| s03 | The nightly batch fails every night | Easy | Free |
+| s04 | Payment entry screen hangs | Medium | Pro (coming soon) |
+| s05 | CPU spikes after a new app release | Medium | Pro (coming soon) |
 
-3 โจทย์แรกเล่นฟรีตลอด ไม่ต้องสมัครสมาชิกและไม่ต้องใช้ license key ส่วนโจทย์ Pro ยังไม่เปิดขาย (เร็วๆ นี้) กด Watch ที่ repo นี้ไว้เพื่อรับข่าวตอนเปิดตัว
+The first three scenarios are free forever: no sign-up and no licence key. Pro scenarios are
+not on sale yet (coming soon). Watch this repository to hear when they launch.
 
-เจอปัญหาหรืออยากเสนอโจทย์ใหม่ เปิด issue ได้ที่ https://github.com/kulchartt/oracledbasim/issues
-
-## ทดสอบทุกโจทย์กับ Oracle จริง (Windows คลิกเดียว)
-
-ดับเบิลคลิก `run-selftest.bat` สคริปต์จะ:
-1. เช็ค Docker และ Python
-2. ดาวน์โหลดและเปิด Oracle Database Free (ครั้งแรกโหลดหลาย GB)
-3. ติดตั้ง dbasim ใน `.venv`
-4. รัน `dbasim selftest` ซึ่งทำทุกโจทย์: ฝังปัญหา → ตรวจว่าต้องไม่ผ่าน → แก้ด้วยวิธีเฉลย → ตรวจว่าต้องผ่าน
-
-ผลจะอยู่ใน `selftest-result.txt` และ `selftest-dbasim.txt`
-
-## สำหรับนักพัฒนา
-
-```bash
-pip install -e ".[test]"
-pytest
-```
-
-โครงของโจทย์อยู่ใน `dbasim/scenarios/` แต่ละข้อมี `setup` (ฝังปัญหา), `workload_step`
-(ผู้ใช้จำลอง), `collect` (วัดค่าใน DB) และ `evaluate` (ตัดสินแบบ pure Python ทดสอบได้โดยไม่ต้องมี Oracle)
+Found a problem, or want to suggest a scenario? Open an issue at
+https://github.com/kulchartt/oracledbasim/issues

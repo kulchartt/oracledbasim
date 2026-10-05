@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>dbasim</title>
-<link rel="alternate" hreflang="th" href="./">
-<link rel="alternate" hreflang="en" href="en/">
+<link rel="alternate" hreflang="th" href="th/">
+<link rel="alternate" hreflang="en" href="./">
+<link rel="alternate" hreflang="x-default" href="./">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -131,24 +132,24 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
   <header class="top">
     <span class="brand">dbasim<b>_</b></span>
     <nav class="top-links">
-      <a class="note" href="#pricing">วิธีติดตั้ง</a>
+      <a class="note" href="#pricing">Install</a>
       <a class="note" href="https://github.com/kulchartt/oracledbasim">GitHub</a>
-      <a class="note" href="en/" hreflang="en" lang="en">English</a>
+      <a class="note" href="th/" hreflang="th" lang="th">ภาษาไทย</a>
     </nav>
   </header>
 
   <div class="hero">
     <div class="lead">
       <span class="eyebrow">Oracle DBA break-fix lab</span>
-      <h1>ฝึกแก้ DB พังตอนตีสอง ก่อนจะเจอของจริง</h1>
-      <p class="sub">dbasim สร้างเหตุการณ์จริงขึ้นใน Oracle บนเครื่องของคุณ มีผู้ใช้จำลองกดระบบอยู่ตลอด คุณหาสาเหตุ แก้ แล้วให้ระบบตรวจว่าแก้ถูกจริงหรือไม่ ไม่ใช่แค่ดูวิดีโอแล้วจบ</p>
+      <h1>Practice the 2&nbsp;a.m. database outage before it happens for real</h1>
+      <p class="sub">dbasim breaks a real Oracle database on your own machine while simulated users keep hammering the app. You find the cause, fix it, and dbasim checks whether the fix actually holds. Hands on the keyboard, not another video course.</p>
       <div class="cta-row">
-        <a class="btn" href="#pricing">เริ่มเล่นฟรี</a>
-        <span class="note">เล่นฟรี 3 โจทย์ ไม่ต้องสมัคร · โจทย์ Pro เร็วๆ นี้</span>
+        <a class="btn" href="#pricing">Start free</a>
+        <span class="note">3 scenarios free, no sign-up · Pro scenarios coming soon</span>
       </div>
     </div>
 
-    <div class="term" role="img" aria-label="ตัวอย่างหน้าจอ: batch ล้มด้วย ORA-01652 แล้วผู้เล่นแก้และตรวจผ่าน">
+    <div class="term" role="img" aria-label="Sample session: a batch job fails with ORA-01652, the player fixes it and passes the check">
       <div class="bar"><span>Ticket #5233 · NIGHTLY_BATCH</span><span>02:07</span></div>
 <pre><span class="t-cmd">$ dbasim logs</span>
 <span class="t-dim">02:01:14</span> <span class="t-err">ERROR</span>  NIGHTLY_BATCH FAILED after 3.2s:
@@ -160,42 +161,42 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
 <span class="t-dim">User altered.</span>
 
 <span class="t-cmd">$ dbasim check</span>
- <span class="t-ok">✓</span> NIGHTLY_BATCH รันจนจบโดยไม่ error
- <span class="t-ok">✓</span> ข้อมูลใน SHOP.INVOICES ยังครบเหมือนเดิม
-<span class="t-ok">ผ่าน! คะแนน 85</span> ใช้เวลา 14.2 นาที<span class="cursor">▍</span></pre>
+ <span class="t-ok">✓</span> NIGHTLY_BATCH runs to completion without errors
+ <span class="t-ok">✓</span> SHOP.INVOICES data is still intact
+<span class="t-ok">Passed! Score 85</span> in 14.2 min<span class="cursor">▍</span></pre>
     </div>
   </div>
 
   <section id="how">
     <div class="sec-head">
-      <span class="eyebrow">เล่นยังไง</span>
-      <h2>สามขั้น จากรับ ticket ถึงได้คะแนน</h2>
+      <span class="eyebrow">How it works</span>
+      <h2>Three steps from ticket to score</h2>
     </div>
     <ol class="steps">
-      <li><h3>เปิด Oracle Free ในเครื่อง</h3><p>Docker คำสั่งเดียว ดาวน์โหลดจาก Oracle โดยตรง แล้วต่อด้วย SQL*Plus หรือ SQL Developer ที่คุณถนัด</p></li>
-      <li><h3>รับโจทย์ <code>dbasim start s01</code></h3><p>ระบบฝังปัญหาเข้า DB และเปิดแอปจำลองที่มีผู้ใช้หลายคน คุณได้ ticket กับ log เหมือนวันทำงานจริง</p></li>
-      <li><h3>แก้แล้วตรวจ <code>dbasim check</code></h3><p>ตรวจทั้งผลลัพธ์และวิธีแก้ ลบข้อมูลเพื่อให้เร็วขึ้นไม่นับ ผ่านแล้วได้เฉลยแบบ DBA อาวุโสอธิบาย</p></li>
+      <li><h3>Run Oracle Free locally</h3><p>One Docker command, pulled straight from Oracle. Connect with SQL*Plus or SQL Developer, whichever you prefer.</p></li>
+      <li><h3>Take a ticket <code>dbasim start s01</code></h3><p>dbasim plants the fault in the database and starts a simulated app with many users. You get a ticket and logs, just like a real shift.</p></li>
+      <li><h3>Fix it, then <code>dbasim check</code></h3><p>It checks both the outcome and how you got there. Deleting data to make things faster does not count. Pass, and a senior DBA walkthrough explains the fix.</p></li>
     </ol>
   </section>
 
   <section>
     <div class="sec-head">
-      <span class="eyebrow">โจทย์</span>
-      <h2>เคสที่ DBA ทุกคนต้องเจอสักวัน</h2>
-      <p>ทุกข้อแก้ได้ด้วยเครื่องมือที่มีใน Oracle Free เช่น v$ views, DBMS_XPLAN และ trace</p>
+      <span class="eyebrow">Scenarios</span>
+      <h2>Incidents every DBA meets sooner or later</h2>
+      <p>Each one is solvable with what ships in Oracle Free: v$ views, DBMS_XPLAN and trace.</p>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>โจทย์</th><th>อาการที่คุณเห็น</th><th>ระดับ</th><th>แผน</th><th>สถานะ</th></tr></thead>
+        <thead><tr><th>Scenario</th><th>What you see</th><th>Level</th><th>Plan</th><th>Status</th></tr></thead>
         <tbody>
-          <tr><td>หน้าค้นหาออเดอร์ช้า</td><td class="sym">ORDER_SEARCH customer=4127 … (SLOW)</td><td>ง่าย</td><td><span class="pill free">Free</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
-          <tr><td>Report ปิดเดือนช้าหลังย้ายข้อมูล</td><td class="sym">MONTH_END report region=1 … (SLOW)</td><td>ง่าย</td><td><span class="pill free">Free</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
-          <tr><td>Batch กลางคืนล้มทุกคืน</td><td class="sym">ORA-01652 in tablespace TEMP_RPT</td><td>ง่าย</td><td><span class="pill free">Free</span></td><td><span class="pill live">พร้อมเล่น</span></td></tr>
-          <tr><td>หน้าจอบันทึกการชำระเงินค้าง</td><td class="sym">ORA-30006 / ORA-00054 · enq: TX - row lock contention</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">เร็วๆ นี้</span></td></tr>
-          <tr><td>CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่</td><td class="sym">parse count (hard) พุ่ง</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">เร็วๆ นี้</span></td></tr>
-          <tr><td>Report ยาวล้มกลางทาง</td><td class="sym">ORA-01555: snapshot too old</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">กำลังทำ</span></td></tr>
-          <tr><td>ทุกคน connect ไม่ได้</td><td class="sym">ORA-00257: archiver error</td><td>กลาง</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">กำลังทำ</span></td></tr>
-          <tr><td>Query เดิม บางทีเร็ว บางทีช้า</td><td class="sym">bind peeking / plan flip</td><td>ยาก</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">กำลังทำ</span></td></tr>
+          <tr><td>Order search page is slow</td><td class="sym">ORDER_SEARCH customer=4127 … (SLOW)</td><td>Easy</td><td><span class="pill free">Free</span></td><td><span class="pill live">Playable</span></td></tr>
+          <tr><td>Month-end report slow after a data migration</td><td class="sym">MONTH_END report region=1 … (SLOW)</td><td>Easy</td><td><span class="pill free">Free</span></td><td><span class="pill live">Playable</span></td></tr>
+          <tr><td>Nightly batch fails every night</td><td class="sym">ORA-01652 in tablespace TEMP_RPT</td><td>Easy</td><td><span class="pill free">Free</span></td><td><span class="pill live">Playable</span></td></tr>
+          <tr><td>Payment entry screen hangs</td><td class="sym">ORA-30006 / ORA-00054 · enq: TX - row lock contention</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">Coming soon</span></td></tr>
+          <tr><td>CPU spikes after a new app release</td><td class="sym">parse count (hard) spikes</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">Coming soon</span></td></tr>
+          <tr><td>Long report dies halfway through</td><td class="sym">ORA-01555: snapshot too old</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">In progress</span></td></tr>
+          <tr><td>Nobody can connect</td><td class="sym">ORA-00257: archiver error</td><td>Medium</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">In progress</span></td></tr>
+          <tr><td>Same query, sometimes fast, sometimes slow</td><td class="sym">bind peeking / plan flip</td><td>Hard</td><td><span class="pill pro">Pro</span></td><td><span class="pill soon">In progress</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -203,28 +204,28 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
 
   <section>
     <div class="sec-head">
-      <span class="eyebrow">เหมาะกับใคร</span>
-      <h2>คนที่รู้ SQL แล้ว แต่ยังไม่เคยแก้ DB ที่พังจริง</h2>
+      <span class="eyebrow">Who it's for</span>
+      <h2>You know SQL, but you've never fixed a database that's actually broken</h2>
     </div>
     <div class="who">
-      <div><h3>Junior DBA</h3><p>เจอ incident แล้วไม่รู้จะเริ่มดูตรงไหน อยากมีชั่วโมงบินโดยไม่ต้องรอให้ production พัง</p></div>
-      <div><h3>Dev หรือ Sysadmin ที่อยากย้ายสาย</h3><p>ไม่มีระบบจริงให้ฝึก แต่ต้องมีเรื่องจริงไปเล่าตอนสัมภาษณ์</p></div>
-      <div><h3>คนเตรียมสอบ OCP</h3><p>รู้ทฤษฎีจากหนังสือแล้ว อยากลงมือกับสถานการณ์ที่กดดันเหมือนจริง</p></div>
+      <div><h3>Junior DBAs</h3><p>An incident lands and you don't know where to start looking. Build up hours without waiting for production to break.</p></div>
+      <div><h3>Devs and sysadmins moving into DBA work</h3><p>No real system to practice on, but you need real stories to tell in interviews.</p></div>
+      <div><h3>OCP candidates</h3><p>You know the theory from the book. Now try it under pressure that feels like the real thing.</p></div>
     </div>
   </section>
 
   <section>
     <div class="sec-head">
-      <span class="eyebrow">คำถามที่พบบ่อย</span>
-      <h2>ก่อนเริ่มเล่น</h2>
+      <span class="eyebrow">FAQ</span>
+      <h2>Before you start</h2>
     </div>
     <div class="faq">
-      <details><summary>ต้องซื้อ license Oracle ไหม</summary><p>ไม่ต้อง dbasim ใช้ Oracle Database Free ซึ่งคุณดาวน์โหลดจาก Oracle เองภายใต้เงื่อนไขการใช้ฟรีของ Oracle</p></details>
-      <details><summary>เครื่องต้องแรงแค่ไหน</summary><p>ต้องมี Docker, RAM ว่างประมาณ 3GB และ disk ว่าง 10GB ถ้าเครื่องช้า ปรับขนาดข้อมูลของโจทย์ให้เล็กลงได้</p></details>
-      <details><summary>เอาไปลองกับ DB ที่ทำงานได้ไหม</summary><p>ไม่ได้ และไม่ควร dbasim สร้างและลบ object ใน DB จึงล็อกให้ทำงานกับ Oracle Free เท่านั้น</p></details>
-      <details><summary>ราคาเท่าไหร่</summary><p>3 โจทย์แรก (s01–s03) เล่นฟรีตลอด ไม่ต้องสมัครสมาชิกและไม่ต้องใส่บัตร ส่วนโจทย์ Pro ยังไม่เปิดขาย</p></details>
-      <details><summary>โจทย์ Pro จะเปิดเมื่อไหร่</summary><p>ยังไม่ได้กำหนดวัน กด Watch ที่ GitHub ของโปรเจกต์ไว้ จะได้รับแจ้งตอนเปิดตัว ระหว่างนี้โจทย์ฟรี 3 ข้อเล่นได้ครบทุกฟีเจอร์ ทั้งคำใบ้ การตรวจคำตอบ และเฉลย</p></details>
-      <details><summary>เจอปัญหาหรืออยากเสนอโจทย์ใหม่</summary><p>เปิด issue ได้ที่ <a href="https://github.com/kulchartt/oracledbasim/issues">GitHub Issues</a> ของโปรเจกต์</p></details>
+      <details><summary>Do I need an Oracle license?</summary><p>No. dbasim runs on Oracle Database Free, which you download from Oracle yourself under Oracle's free-use terms.</p></details>
+      <details><summary>How powerful does my machine need to be?</summary><p>You need Docker, about 3 GB of free RAM and 10 GB of free disk. On a slower machine you can shrink the scenario data size.</p></details>
+      <details><summary>Can I run it against a database at work?</summary><p>No, and you shouldn't. dbasim creates and drops objects, so it is locked to Oracle Free only.</p></details>
+      <details><summary>How much does it cost?</summary><p>The first 3 scenarios (s01–s03) are free forever, with no sign-up and no card. Pro scenarios are not on sale yet.</p></details>
+      <details><summary>When will Pro launch?</summary><p>No date yet. Watch the project on GitHub to hear when it does. Until then the 3 free scenarios come with everything: hints, grading and the write-ups.</p></details>
+      <details><summary>Found a problem, or want to suggest a scenario?</summary><p>Open an issue on the project's <a href="https://github.com/kulchartt/oracledbasim/issues">GitHub Issues</a>.</p></details>
     </div>
   </section>
 
@@ -232,45 +233,45 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
        live, bring the two paid plan cards and checkout links back (see git history). -->
   <section id="pricing">
     <div class="sec-head">
-      <span class="eyebrow">เริ่มเล่น</span>
-      <h2>เล่นฟรีได้เลย ไม่ต้องสมัครอะไร</h2>
-      <p>3 โจทย์แรกเล่นได้ครบทุกฟีเจอร์ ส่วนโจทย์ Pro ยังไม่เปิดขาย</p>
+      <span class="eyebrow">Get started</span>
+      <h2>Play free now. No sign-up.</h2>
+      <p>The first 3 scenarios come with every feature. Pro scenarios are not on sale yet.</p>
     </div>
     <div class="plans" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
       <div class="plan best">
-        <div class="plan-head"><h3>ฟรี</h3><span class="pill live">พร้อมเล่น</span></div>
+        <div class="plan-head"><h3>Free</h3><span class="pill live">Playable</span></div>
         <p class="price">$0</p>
         <ul>
-          <li>โจทย์ s01–s03 เล่นได้ตลอด</li>
-          <li>คำใบ้ ตรวจคำตอบ และเฉลยแบบ DBA อาวุโส</li>
-          <li>ไม่ต้องสมัคร ไม่ต้องใส่บัตร</li>
+          <li>Scenarios s01–s03, forever</li>
+          <li>Hints, grading and senior DBA write-ups</li>
+          <li>No sign-up, no card</li>
         </ul>
-        <a class="btn" href="#install">ดูวิธีติดตั้ง</a>
+        <a class="btn" href="#install">See how to install</a>
       </div>
       <div class="plan">
-        <div class="plan-head"><h3>Pro</h3><span class="pill soon">เร็วๆ นี้</span></div>
-        <p class="price">ยังไม่เปิดขาย</p>
+        <div class="plan-head"><h3>Pro</h3><span class="pill soon">Coming soon</span></div>
+        <p class="price">Not on sale yet</p>
         <ul>
-          <li>โจทย์ระดับกลางถึงยาก เช่น lock ค้าง และ hard parse</li>
-          <li>โจทย์ใหม่ที่ออกเพิ่มเรื่อยๆ</li>
+          <li>Medium to hard scenarios, such as lock contention and hard parsing</li>
+          <li>New scenarios added over time</li>
         </ul>
-        <a class="btn ghost" href="https://github.com/kulchartt/oracledbasim">ติดตามบน GitHub</a>
+        <a class="btn ghost" href="https://github.com/kulchartt/oracledbasim">Follow on GitHub</a>
       </div>
     </div>
 
     <div class="after" id="install">
       <div>
-        <h3>ติดตั้ง 4 ขั้น</h3>
+        <h3>Install in 4 steps</h3>
         <ol>
-          <li><p>ติดตั้ง Docker และ Python 3.9 ขึ้นไป</p></li>
-          <li><p>เปิด Oracle Database Free ด้วย Docker (ครั้งแรกดาวน์โหลดหลาย GB)</p></li>
-          <li><p>ติดตั้ง dbasim ด้วย <code>pip</code></p></li>
-          <li><p>สั่ง <code>dbasim doctor</code> ตรวจความพร้อม แล้ว <code>dbasim start s01</code></p></li>
+          <li><p>Install Docker and Python 3.9 or newer.</p></li>
+          <li><p>Start Oracle Database Free with Docker (the first download is several GB).</p></li>
+          <li><p>Install dbasim with <code>pip</code>.</p></li>
+          <li><p>Run <code>dbasim doctor</code> to check the setup, then <code>dbasim start s01</code>.</p></li>
         </ol>
-        <p class="fine">คำสั่งแบบละเอียดและการตั้งค่าบน Windows อยู่ใน <a href="https://github.com/kulchartt/oracledbasim#readme">คู่มือบน GitHub</a></p>
+        <p class="fine">Full commands and the Windows setup are in the <a href="https://github.com/kulchartt/oracledbasim/blob/main/README.md">guide on GitHub</a>.</p>
       </div>
-      <div class="term" role="img" aria-label="คำสั่งติดตั้ง dbasim และเริ่มโจทย์แรก">
-        <div class="bar"><span>terminal</span><span>ฟรี</span></div>
+      <div class="term" role="img" aria-label="Commands to install dbasim and start the first scenario">
+        <div class="bar"><span>terminal</span><span>Free</span></div>
 <pre><span class="t-cmd">$ docker run -d --name dbasim-oracle -p 1521:1521 \
     -e ORACLE_PWD=ChangeMe123 \
     container-registry.oracle.com/database/free:latest</span>
@@ -283,7 +284,7 @@ footer{padding-block:32px;border-top:1px solid var(--rule);font-size:.82rem;colo
   </section>
 
   <footer>
-    dbasim เป็นโปรเจกต์อิสระ ไม่ได้เกี่ยวข้องกับ Oracle Corporation · Oracle เป็นเครื่องหมายการค้าของ Oracle Corporation
+    dbasim is an independent project and is not affiliated with Oracle Corporation · Oracle is a trademark of Oracle Corporation
   </footer>
 </div>
 

@@ -75,6 +75,7 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setenv("DBASIM_HOME", str(tmp_path))
     monkeypatch.setenv("DBASIM_ADMIN_PASSWORD", "x")
     monkeypatch.delenv("DBASIM_LANG", raising=False)
+    state.save({**state.load(), "lang": "th"})  # these tests assert on the Thai copy; English is the default
     monkeypatch.setattr(cli, "_launch_workload", lambda: 4242)
     return tmp_path
 
