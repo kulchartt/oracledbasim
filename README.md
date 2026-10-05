@@ -31,7 +31,7 @@ docker logs -f dbasim-oracle   # รอจนเห็น DATABASE IS READY TO U
 ## 2. ติดตั้ง dbasim
 
 ```bash
-pip install https://github.com/kulchartt/oracledbasim/releases/download/v0.3.0/dbasim-0.3.0-py3-none-any.whl
+pip install dbasim
 ```
 
 ## 3. ตั้งค่า

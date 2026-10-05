@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dbasim"
-version = "0.3.0"
+version = "0.3.1"
 description = "Oracle DBA break-fix simulator: inject real-world incidents into your own Oracle Free and get graded on the fix"
 readme = "README.en.md"
 requires-python = ">=3.9"

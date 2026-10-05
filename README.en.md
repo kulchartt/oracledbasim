@@ -33,7 +33,7 @@ between you and Oracle.
 ## 2. Install dbasim
 
 ```bash
-pip install https://github.com/kulchartt/oracledbasim/releases/download/v0.3.0/dbasim-0.3.0-py3-none-any.whl
+pip install dbasim
 ```
 
 ## 3. Configure
