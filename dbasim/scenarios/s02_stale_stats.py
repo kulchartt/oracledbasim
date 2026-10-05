@@ -1,7 +1,6 @@
 import time
 
 from .. import db
-from ..i18n import L, t
 from ..scenario import Criterion, Scenario, integrity_criterion
 
 QUERY = (
@@ -23,59 +22,26 @@ def _close_enough(stat_rows, actual):
 
 class StaleStats(Scenario):
     id = "s02"
-    title = L("Report ปิดเดือนช้าหลังย้ายข้อมูล", "Month-end report slow after data migration")
-    difficulty = L("ง่าย", "Easy")
-    story = L(
-        (
-            "Ticket #5107 จากฝ่ายบัญชี:\n"
-            "\"เมื่อวานทีม IT ย้ายข้อมูลยอดขายย้อนหลังเข้าระบบใหม่ ตั้งแต่นั้น report ปิดเดือน "
-            "(MONTH_END) ช้าจากไม่กี่วินาทีเป็นหลายนาที พรุ่งนี้ต้องปิดงบแล้ว\"\n\n"
-            "งานของคุณ: ทำให้ report กลับมาเร็ว โดยไม่แก้ SQL ของ report และไม่ลบข้อมูล"
-        ),
-        (
-            "Ticket #5107 from Accounting:\n"
+    title = "Month-end report slow after data migration"
+    difficulty = "Easy"
+    story = ("Ticket #5107 from Accounting:\n"
             "\"Yesterday IT migrated the historical sales data into the new system. Since then the month-end report "
             "(MONTH_END) has gone from a few seconds to several minutes. We have to close the books tomorrow.\"\n\n"
-            "Your job: make the report fast again without changing the report's SQL and without deleting any data."
-        ),
-    )
+            "Your job: make the report fast again without changing the report's SQL and without deleting any data.")
     hints = [
-        L(
-            "ข้อมูลเพิ่งถูกโหลดเข้ามาเยอะ ลองเทียบจำนวนแถวที่ optimizer คิด (num_rows ใน dba_tables) กับ count(*) จริง",
-            "A lot of data was just loaded. Compare the row count the optimizer believes (num_rows in dba_tables) "
+        "A lot of data was just loaded. Compare the row count the optimizer believes (num_rows in dba_tables) "
             "with the real count(*)",
-        ),
-        L(
-            "เก็บ statistics ใหม่ด้วย dbms_stats.gather_table_stats แล้วสังเกต error ที่ได้",
-            "Regather statistics with dbms_stats.gather_table_stats and note the error you get",
-        ),
-        L(
-            "ถ้าเจอ ORA-20005 แปลว่า stats ถูก lock อยู่ ลองดู stattype_locked ใน dba_tab_statistics",
-            "ORA-20005 means the stats are locked. Check stattype_locked in dba_tab_statistics",
-        ),
+        "Regather statistics with dbms_stats.gather_table_stats and note the error you get",
+        "ORA-20005 means the stats are locked. Check stattype_locked in dba_tab_statistics",
     ]
-    solution = L(
-        (
-            "สาเหตุ: statistics ของ SALES บอกว่ามีแค่ 1,000 แถวและแต่ละ region มีไม่กี่แถว แล้วมีคน lock stats ไว้ "
-            "หลังจากนั้นโหลดข้อมูลเพิ่มเป็นล้านแถว โดย 80% อยู่ใน region 1 optimizer ยังเชื่อตัวเลขเก่า "
-            "จึงเลือกวิ่งผ่าน index ทีละแถว ซึ่งเหมาะกับข้อมูลไม่กี่แถว แต่ช้ามากเมื่อต้องอ่านเป็นล้านแถว\n\n"
-            "วิธีแก้:\n"
-            "  exec dbms_stats.unlock_table_stats('SHOP','SALES');\n"
-            "  exec dbms_stats.gather_table_stats('SHOP','SALES', cascade => true);\n\n"
-            "เรื่องที่ DBA อาวุโสจะทำต่อ: ถามว่าใคร lock stats และทำไม บางทีมตั้งใจ lock เพื่อให้ plan นิ่ง "
-            "ถ้าปลดแล้วต้องตกลงกันว่าหลังโหลดข้อมูลก้อนใหญ่ต้องเก็บ stats ทุกครั้ง"
-        ),
-        (
-            "Cause: the SALES statistics say the table has only 1,000 rows with a handful per region, and someone locked them. "
+    solution = ("Cause: the SALES statistics say the table has only 1,000 rows with a handful per region, and someone locked them. "
             "Then millions of rows were loaded, 80% of them in region 1. The optimizer still trusts the old numbers, "
             "so it walks the index row by row - fine for a few rows, but very slow when it has to read millions.\n\n"
             "Fix:\n"
             "  exec dbms_stats.unlock_table_stats('SHOP','SALES');\n"
             "  exec dbms_stats.gather_table_stats('SHOP','SALES', cascade => true);\n\n"
             "What a senior DBA does next: find out who locked the stats and why. Some teams lock them on purpose to keep plans stable. "
-            "If you unlock them, agree that stats get regathered after every large data load."
-        ),
-    )
+            "If you unlock them, agree that stats get regathered after every large data load.")
     workload_threads = 1
     workload_pause = 5.0
 
@@ -185,17 +151,14 @@ class StaleStats(Scenario):
         ix_ok = m["ix_fresh"] and _close_enough(m["ix_num_rows"], actual)
         return [
             Criterion(
-                t("statistics ของตาราง SALES ตรงกับข้อมูลจริง", "SALES table statistics match the real data"),
+                "SALES table statistics match the real data",
                 tab_ok,
-                t(f"optimizer คิดว่ามี {m['tab_num_rows'] or 0:,} แถว แต่จริงมี {actual:,} แถว",
-                  f"optimizer thinks there are {m['tab_num_rows'] or 0:,} rows, actual is {actual:,}"),
+                f"optimizer thinks there are {m['tab_num_rows'] or 0:,} rows, actual is {actual:,}",
             ),
             Criterion(
-                t("statistics ของ index SALES_REGION_IX ตรงกับข้อมูลจริง",
-                  "SALES_REGION_IX index statistics match the real data"),
+                "SALES_REGION_IX index statistics match the real data",
                 ix_ok,
-                t(f"index stats บอก {m['ix_num_rows'] or 0:,} แถว",
-                  f"index stats say {m['ix_num_rows'] or 0:,} rows"),
+                f"index stats say {m['ix_num_rows'] or 0:,} rows",
             ),
             integrity_criterion(m["sales"], baseline["sales"], "SHOP.SALES"),
         ]

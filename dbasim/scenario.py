@@ -8,7 +8,6 @@ evaluate() is pure Python so the grading rules are unit-testable without Oracle.
 """
 from dataclasses import dataclass
 
-from .i18n import t
 
 
 @dataclass
@@ -21,7 +20,7 @@ class Criterion:
 class Scenario:
     id = ""
     title = ""
-    difficulty = ""          # ง่าย / กลาง / ยาก (Easy / Medium / Hard)
+    difficulty = ""          # Easy / Medium / Hard
     story = ""               # the "ticket" the player receives
     hints = []               # ordered, vaguest first
     solution = ""            # senior-DBA write-up shown after solving
@@ -72,10 +71,6 @@ class Scenario:
 
 def integrity_criterion(metrics_fp, baseline_fp, label):
     ok = metrics_fp == baseline_fp
-    detail = "" if ok else t(
-        f"ข้อมูลเปลี่ยน: เดิม {baseline_fp['count']:,} แถว ตอนนี้ {metrics_fp['count']:,} แถว "
-        "(ห้ามแก้ปัญหาด้วยการลบหรือแก้ข้อมูลของ user)",
-        f"Data changed: {baseline_fp['count']:,} rows before, {metrics_fp['count']:,} now "
-        "(do not fix the problem by deleting or changing the users' data)",
-    )
-    return Criterion(t(f"ข้อมูลใน {label} ยังครบเหมือนเดิม", f"Data in {label} is unchanged"), ok, detail)
+    detail = "" if ok else (f"Data changed: {baseline_fp['count']:,} rows before, {metrics_fp['count']:,} now "
+        "(do not fix the problem by deleting or changing the users' data)")
+    return Criterion(f"Data in {label} is unchanged", ok, detail)

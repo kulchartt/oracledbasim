@@ -8,7 +8,6 @@ import sys
 import time
 
 from . import __version__, db, license, state
-from .i18n import lang, t
 from .scenarios import ALL, get
 
 OK, BAD = "✓", "✗"
@@ -75,11 +74,11 @@ def cmd_doctor(args):
     _say(f"DSN: {c['dsn']}  user: {c['admin_user']}")
     admin = db.admin_connect()
     banner, con = db.assert_safe_target(admin)
-    _say(t(f"{OK} ต่อ DB ได้: {banner}", f"{OK} connected: {banner}"))
+    _say(f"{OK} connected: {banner}")
     _say(f"{OK} container: {con}")
     users_ts = db.scalar(admin, "select count(*) from dba_tablespaces where tablespace_name = 'USERS'")
-    _say(t(f"{OK if users_ts else BAD} มี tablespace USERS", f"{OK if users_ts else BAD} tablespace USERS exists"))
-    _say(t("\nพร้อมเล่นแล้ว ลอง: dbasim list", "\nReady to play. Try: dbasim list"))
+    _say(f"{OK if users_ts else BAD} tablespace USERS exists")
+    _say("\nReady to play. Try: dbasim list")
     return 0
 
 
@@ -87,19 +86,14 @@ def cmd_list(args):
     st = state.load()
     best = state.best_scores(st)
     active = (st.get("active") or {}).get("scenario")
-    _say(t(f"{'ID':<5}{'ระดับ':<7}{'แผน':<6}{'คะแนนสูงสุด':<14}โจทย์",
-           f"{'ID':<5}{'Level':<8}{'Plan':<6}{'Best':<6}Scenario"))
+    _say(f"{'ID':<5}{'Level':<8}{'Plan':<6}{'Best':<6}Scenario")
     for s in ALL:
-        mark = t(" <- กำลังเล่น", " <- playing") if s.id == active else ""
+        mark = " <- playing" if s.id == active else ""
         score = f"{best[s.id]}" if s.id in best else "-"
-        plan = "Pro" if s.premium else t("ฟรี", "Free")
-        if lang() == "en":
-            _say(f"{s.id:<5}{s.difficulty:<8}{plan:<6}{score:<6}{s.title}{mark}")
-        else:
-            _say(f"{s.id:<5}{s.difficulty:<7}{plan:<6}{score:<14}{s.title}{mark}")
+        plan = "Pro" if s.premium else "Free"
+        _say(f"{s.id:<5}{s.difficulty:<8}{plan:<6}{score:<6}{s.title}{mark}")
     if not license.on_sale() and any(s.premium for s in ALL):
-        _say(t("โจทย์ Pro ยังไม่เปิดขาย (เร็วๆ นี้) ตอนนี้เล่นโจทย์ฟรีได้ทุกข้อ",
-               "Pro scenarios are not on sale yet (coming soon). Every Free scenario is playable now"))
+        _say("Pro scenarios are not on sale yet (coming soon). Every Free scenario is playable now")
     return 0
 
 
@@ -107,8 +101,7 @@ def cmd_start(args):
     scenario = get(args.id)
     st = state.load()
     if st.get("active") and not st["active"].get("solved") and not args.force:
-        _say(t(f"ยังมีโจทย์ {st['active']['scenario']} ค้างอยู่ ใช้ dbasim reset ก่อน หรือเพิ่ม --force",
-               f"Scenario {st['active']['scenario']} is still in progress. Run dbasim reset first, or add --force"))
+        _say(f"Scenario {st['active']['scenario']} is still in progress. Run dbasim reset first, or add --force")
         return 1
     if scenario.premium and not getattr(args, "skip_license", False):
         try:
@@ -124,8 +117,7 @@ def cmd_start(args):
 
     admin = db.admin_connect()
     db.assert_safe_target(admin)
-    _say(t(f"กำลังเตรียมสถานการณ์ {scenario.id}: {scenario.title} (อาจใช้เวลา 1-3 นาที) ...",
-           f"Preparing scenario {scenario.id}: {scenario.title} (may take 1-3 minutes) ..."))
+    _say(f"Preparing scenario {scenario.id}: {scenario.title} (may take 1-3 minutes) ...")
     scenario.teardown(admin, params)
     scenario.setup(admin, params)
     baseline = scenario.baseline(admin, params)
@@ -140,15 +132,14 @@ def cmd_start(args):
     _say("\n" + "=" * 64)
     _say(str(scenario.story))
     _say("=" * 64)
-    _say(t("\nแอปจำลองเริ่มทำงานแล้ว  ดู log แอป: dbasim logs  |  ขอคำใบ้: dbasim hint",
-           "\nThe simulated app is running.  App log: dbasim logs  |  Hint: dbasim hint"))
-    _say(t("แก้เสร็จแล้วสั่ง: dbasim check", "When you have fixed it, run: dbasim check"))
+    _say("\nThe simulated app is running.  App log: dbasim logs  |  Hint: dbasim hint")
+    _say("When you have fixed it, run: dbasim check")
     return 0
 
 
 def _require_active(st):
     if not st.get("active"):
-        _say(t("ยังไม่มีโจทย์ที่กำลังเล่น ใช้ dbasim start <id>", "No scenario in progress. Use dbasim start <id>"))
+        _say("No scenario in progress. Use dbasim start <id>")
         return None
     return st["active"]
 
@@ -161,14 +152,11 @@ def cmd_status(args):
     s = get(active["scenario"])
     minutes = (time.time() - active["started_at"]) / 60
     running = bool(active.get("workload_pid"))
-    _say(t(f"โจทย์: {s.id} {s.title}", f"Scenario: {s.id} {s.title}"))
-    _say(t(f"เวลาที่ใช้: {minutes:.0f} นาที  คำใบ้ที่เปิด: {active['hints_shown']}/{len(s.hints)}",
-           f"Time: {minutes:.0f} min  Hints used: {active['hints_shown']}/{len(s.hints)}"))
-    _say(t(f"คะแนนถ้าผ่านตอนนี้: {state.score(active)}", f"Score if solved now: {state.score(active)}"))
-    _say(t(f"user ของแอป: SHOP / {active['params']['shop_password']}",
-           f"App user: SHOP / {active['params']['shop_password']}"))
-    _say(t(f"แอปจำลอง: {'ทำงานอยู่' if running else 'หยุดแล้ว'}",
-           f"Simulated app: {'running' if running else 'stopped'}"))
+    _say(f"Scenario: {s.id} {s.title}")
+    _say(f"Time: {minutes:.0f} min  Hints used: {active['hints_shown']}/{len(s.hints)}")
+    _say(f"Score if solved now: {state.score(active)}")
+    _say(f"App user: SHOP / {active['params']['shop_password']}")
+    _say(f"Simulated app: {'running' if running else 'stopped'}")
     return 0
 
 
@@ -178,7 +166,7 @@ def cmd_logs(args):
     for line in lines[-args.n:]:
         _say(line)
     if not lines:
-        _say(t("(ยังไม่มี log รอสักครู่ให้แอปทำงาน)", "(no log yet - give the app a moment)"))
+        _say("(no log yet - give the app a moment)")
     return 0
 
 
@@ -190,12 +178,11 @@ def cmd_hint(args):
     s = get(active["scenario"])
     i = active["hints_shown"]
     if i >= len(s.hints):
-        _say(t("คำใบ้หมดแล้ว ถ้ายอมแพ้ใช้ dbasim solution", "No hints left. To give up, use dbasim solution"))
+        _say("No hints left. To give up, use dbasim solution")
         return 0
     active["hints_shown"] = i + 1
     state.save(st)
-    _say(t(f"คำใบ้ {i + 1}/{len(s.hints)} (หัก {state.HINT_PENALTY} คะแนน): {s.hints[i]}",
-           f"Hint {i + 1}/{len(s.hints)} (-{state.HINT_PENALTY} points): {s.hints[i]}"))
+    _say(f"Hint {i + 1}/{len(s.hints)} (-{state.HINT_PENALTY} points): {s.hints[i]}")
     return 0
 
 
@@ -205,12 +192,10 @@ def cmd_check(args):
     if not active:
         return 1
     s = get(active["scenario"])
-    _say(t("กำลังตรวจ ...", "Checking ..."))
+    _say("Checking ...")
     if s.check_needs_workload and not active.get("solved") and not _alive(active.get("workload_pid")):
-        _say(t(f"{BAD} แอปจำลองไม่ได้ทำงานอยู่ โจทย์นี้ต้องตรวจตอนที่แอปทำงาน "
-               f"เริ่มใหม่ด้วย dbasim start {s.id} --force",
-               f"{BAD} The simulated app is not running and this scenario must be checked while it runs. "
-               f"Restart with dbasim start {s.id} --force"))
+        _say(f"{BAD} The simulated app is not running and this scenario must be checked while it runs. "
+               f"Restart with dbasim start {s.id} --force")
         return 1
     # usually pause the simulated app so its load does not skew the measurement
     was_running = bool(active.get("workload_pid")) and not active.get("solved")
@@ -228,9 +213,8 @@ def cmd_check(args):
     try:
         results = s.check(admin, active["params"], active["baseline"])
     except Exception as exc:
-        _say(t(f"{BAD} ตรวจไม่ได้: {db.first_line(exc)}", f"{BAD} Could not check: {db.first_line(exc)}"))
-        _say(t("(ถ้า object ของโจทย์หายไป ให้เริ่มใหม่ด้วย dbasim start --force)",
-               "(if the scenario's objects are gone, restart with dbasim start --force)"))
+        _say(f"{BAD} Could not check: {db.first_line(exc)}")
+        _say("(if the scenario's objects are gone, restart with dbasim start --force)")
         resume()
         return 1
     finally:
@@ -238,7 +222,7 @@ def cmd_check(args):
     for r in results:
         _say(f" {OK if r.passed else BAD} {r.name}" + (f"  — {r.detail}" if r.detail else ""))
     if not all(r.passed for r in results):
-        _say(t("\nยังไม่ผ่าน ลองต่อ หรือขอคำใบ้ด้วย dbasim hint", "\nNot solved yet. Keep going, or ask for a hint: dbasim hint"))
+        _say("\nNot solved yet. Keep going, or ask for a hint: dbasim hint")
         resume()
         return 2
     if not active.get("solved"):
@@ -246,9 +230,8 @@ def cmd_check(args):
         active["solved"] = True
         _stop_workload(active)
         state.save(st)
-        _say(t(f"\nผ่าน! คะแนน {entry['score']} ใช้เวลา {entry['minutes']} นาที",
-               f"\nSolved! Score {entry['score']} in {entry['minutes']} min"))
-    _say(t("\n--- เฉลยแบบ DBA อาวุโส ---\n", "\n--- How a senior DBA would explain it ---\n") + str(s.solution))
+        _say(f"\nSolved! Score {entry['score']} in {entry['minutes']} min")
+    _say("\n--- How a senior DBA would explain it ---\n" + str(s.solution))
     return 0
 
 
@@ -258,8 +241,7 @@ def cmd_solution(args):
     if not active:
         return 1
     if not args.yes:
-        _say(t("ดูเฉลยแล้วโจทย์นี้จะได้ 0 คะแนน ถ้าแน่ใจให้สั่ง dbasim solution --yes",
-               "Viewing the solution scores 0 for this scenario. If you are sure: dbasim solution --yes"))
+        _say("Viewing the solution scores 0 for this scenario. If you are sure: dbasim solution --yes")
         return 0
     active["solution_revealed"] = True
     state.save(st)
@@ -271,7 +253,7 @@ def cmd_stop(args):
     st = state.load()
     _stop_workload(st.get("active"))
     state.save(st)
-    _say(t("หยุดแอปจำลองแล้ว", "Simulated app stopped"))
+    _say("Simulated app stopped")
     return 0
 
 
@@ -284,7 +266,7 @@ def cmd_reset(args):
     admin.close()
     st["active"] = None
     state.save(st)
-    _say(t("ล้างสถานการณ์เรียบร้อย", "Scenario cleaned up"))
+    _say("Scenario cleaned up")
     return 0
 
 
@@ -354,15 +336,15 @@ def cmd_selftest(args):
     return 0 if all(v == "OK" for _, v, _, _ in summary) else 2
 
 
-# ---- dbasim Pro licence + language ----------------------------------------
+# ---- dbasim Pro licence ---------------------------------------------------
 
 def _show_license(lic):
-    _say(t(f"{OK} dbasim Pro ใช้งานได้", f"{OK} dbasim Pro is active"))
+    _say(f"{OK} dbasim Pro is active")
     _say(f"  key: {license.masked(lic['key'])}")
     if lic.get("plan"):
-        _say(t(f"  แผน: {lic['plan']}", f"  plan: {lic['plan']}"))
+        _say(f"  plan: {lic['plan']}")
     if lic.get("email"):
-        _say(t(f"  อีเมล: {lic['email']}", f"  email: {lic['email']}"))
+        _say(f"  email: {lic['email']}")
 
 
 def cmd_activate(args):
@@ -372,23 +354,21 @@ def cmd_activate(args):
         _say(f"{BAD} {exc}")
         return 1
     except license.Offline as exc:
-        _say(t(f"{BAD} ต่อ Lemon Squeezy ไม่ได้: {exc}", f"{BAD} Could not reach Lemon Squeezy: {exc}"))
+        _say(f"{BAD} Could not reach Lemon Squeezy: {exc}")
         return 1
     _show_license(lic)
-    _say(t("เล่นได้ทุกโจทย์แล้ว ลอง: dbasim list", "Every scenario is unlocked. Try: dbasim list"))
+    _say("Every scenario is unlocked. Try: dbasim list")
     return 0
 
 
 def cmd_license(args):
     lic = license.load()
     if not lic:
-        _say(t("ยังไม่ได้เปิดใช้ dbasim Pro (3 โจทย์แรกเล่นฟรี)", "dbasim Pro is not activated (the first 3 scenarios are free)"))
+        _say("dbasim Pro is not activated (the first 3 scenarios are free)")
         if not license.on_sale():
-            _say(t(f"dbasim Pro ยังไม่เปิดขาย (เร็วๆ นี้) ติดตามได้ที่ {license.PROJECT_URL}",
-                   f"dbasim Pro is not on sale yet (coming soon). Follow {license.PROJECT_URL}"))
+            _say(f"dbasim Pro is not on sale yet (coming soon). Follow {license.PROJECT_URL}")
             return 0
-        _say(t(f"สมัคร: {license.pricing_url()}  แล้วสั่ง dbasim activate <license-key>",
-               f"Subscribe: {license.pricing_url()}  then run dbasim activate <licence-key>"))
+        _say(f"Subscribe: {license.pricing_url()}  then run dbasim activate <licence-key>")
         return 0
     try:
         lic = license.refresh() if args.refresh else license.require_pro()
@@ -396,7 +376,7 @@ def cmd_license(args):
         _say(f"{BAD} {exc}")
         return 1
     except license.Offline as exc:
-        _say(t(f"{BAD} ต่อ Lemon Squeezy ไม่ได้: {exc}", f"{BAD} Could not reach Lemon Squeezy: {exc}"))
+        _say(f"{BAD} Could not reach Lemon Squeezy: {exc}")
         return 1
     _show_license(lic)
     return 0
@@ -408,18 +388,8 @@ def cmd_deactivate(args):
     except license.LicenseError as exc:
         _say(f"{BAD} {exc}")
         return 1
-    _say(t("ถอด license ออกจากเครื่องนี้แล้ว ใช้ key เดิมกับเครื่องอื่นได้",
-           "Licence removed from this computer; you can use the key on another one")
-         if removed else t("เครื่องนี้ยังไม่ได้เปิดใช้ dbasim Pro", "dbasim Pro is not activated on this computer"))
-    return 0
-
-
-def cmd_lang(args):
-    st = state.load()
-    if args.code:
-        st["lang"] = args.code
-        state.save(st)
-    _say(t("ภาษา: ไทย (เปลี่ยนเป็นอังกฤษ: dbasim lang en)", "Language: English (switch to Thai: dbasim lang th)"))
+    _say("Licence removed from this computer; you can use the key on another one"
+         if removed else "dbasim Pro is not activated on this computer")
     return 0
 
 
@@ -427,38 +397,31 @@ def build_parser():
     p = argparse.ArgumentParser(prog="dbasim", description="Oracle DBA break-fix simulator")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("doctor", help=t("ตรวจว่าต่อ Oracle Free ได้และพร้อมเล่น",
-                                    "check the connection to Oracle Free")).set_defaults(fn=cmd_doctor)
-    sub.add_parser("list", help=t("ดูรายการโจทย์", "list scenarios")).set_defaults(fn=cmd_list)
-    sp = sub.add_parser("start", help=t("เริ่มโจทย์", "start a scenario"))
+    sub.add_parser("doctor", help="check the connection to Oracle Free").set_defaults(fn=cmd_doctor)
+    sub.add_parser("list", help="list scenarios").set_defaults(fn=cmd_list)
+    sp = sub.add_parser("start", help="start a scenario")
     sp.add_argument("id")
     sp.add_argument("--force", action="store_true")
     sp.set_defaults(fn=cmd_start)
-    sub.add_parser("status", help=t("สถานะโจทย์ปัจจุบัน", "current scenario status")).set_defaults(fn=cmd_status)
-    lp = sub.add_parser("logs", help=t("ดู log ของแอปจำลอง", "show the simulated app's log"))
+    sub.add_parser("status", help="current scenario status").set_defaults(fn=cmd_status)
+    lp = sub.add_parser("logs", help="show the simulated app's log")
     lp.add_argument("-n", type=int, default=30)
     lp.set_defaults(fn=cmd_logs)
-    sub.add_parser("hint", help=t("ขอคำใบ้ (หักคะแนน)", "get a hint (costs points)")).set_defaults(fn=cmd_hint)
-    sub.add_parser("check", help=t("ตรวจคำตอบ", "check your fix")).set_defaults(fn=cmd_check)
-    so = sub.add_parser("solution", help=t("ดูเฉลย (ได้ 0 คะแนน)", "show the solution (scores 0)"))
+    sub.add_parser("hint", help="get a hint (costs points)").set_defaults(fn=cmd_hint)
+    sub.add_parser("check", help="check your fix").set_defaults(fn=cmd_check)
+    so = sub.add_parser("solution", help="show the solution (scores 0)")
     so.add_argument("--yes", action="store_true")
     so.set_defaults(fn=cmd_solution)
-    sub.add_parser("stop", help=t("หยุดแอปจำลอง", "stop the simulated app")).set_defaults(fn=cmd_stop)
-    sub.add_parser("reset", help=t("ล้างทุกอย่างที่ dbasim สร้าง",
-                                   "remove everything dbasim created")).set_defaults(fn=cmd_reset)
-    ap = sub.add_parser("activate", help=t("เปิดใช้ dbasim Pro ด้วย license key", "activate dbasim Pro with a licence key"))
+    sub.add_parser("stop", help="stop the simulated app").set_defaults(fn=cmd_stop)
+    sub.add_parser("reset", help="remove everything dbasim created").set_defaults(fn=cmd_reset)
+    ap = sub.add_parser("activate", help="activate dbasim Pro with a licence key")
     ap.add_argument("key")
     ap.set_defaults(fn=cmd_activate)
-    lc = sub.add_parser("license", help=t("ดูสถานะ dbasim Pro", "show dbasim Pro status"))
+    lc = sub.add_parser("license", help="show dbasim Pro status")
     lc.add_argument("--refresh", action="store_true")
     lc.set_defaults(fn=cmd_license)
-    sub.add_parser("deactivate", help=t("ถอด license ออกจากเครื่องนี้",
-                                        "remove the licence from this computer")).set_defaults(fn=cmd_deactivate)
-    lg = sub.add_parser("lang", help=t("เปลี่ยนภาษา th / en", "switch language th / en"))
-    lg.add_argument("code", nargs="?", choices=["th", "en"])
-    lg.set_defaults(fn=cmd_lang)
-    tp = sub.add_parser("selftest", help=t("(สำหรับผู้พัฒนา) ทดสอบทุกโจทย์กับ DB จริง: ต้องพังก่อนแก้ และผ่านหลังแก้",
-                                           "(developers) prove every scenario on a real DB: broken before, passing after"))
+    sub.add_parser("deactivate", help="remove the licence from this computer").set_defaults(fn=cmd_deactivate)
+    tp = sub.add_parser("selftest", help="(developers) prove every scenario on a real DB: broken before, passing after")
     tp.add_argument("ids", nargs="*")
     tp.add_argument("--warmup", type=int, default=45)
     tp.set_defaults(fn=cmd_selftest)
@@ -467,7 +430,7 @@ def build_parser():
 
 def main(argv=None):
     if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")  # Thai text on Windows consoles
+        sys.stdout.reconfigure(encoding="utf-8")  # check marks and box characters on Windows consoles
     args = build_parser().parse_args(argv)
     try:
         return args.fn(args)

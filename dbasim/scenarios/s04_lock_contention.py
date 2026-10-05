@@ -1,7 +1,6 @@
 import time
 
 from .. import db
-from ..i18n import L, t
 from ..scenario import Criterion, Scenario, integrity_criterion
 
 PAY_LOCK = "select balance from shop.accounts where account_id = :a for update wait 10"
@@ -17,59 +16,23 @@ STUCK_MICROS = 5_000_000
 
 class LockContention(Scenario):
     id = "s04"
-    title = L("หน้าจอบันทึกการชำระเงินค้าง", "Payment entry screen hangs")
-    difficulty = L("กลาง", "Medium")
+    title = "Payment entry screen hangs"
+    difficulty = "Medium"
     premium = True
-    story = L(
-        (
-            "Ticket #5390 จากทีมการเงิน (ด่วน):\n"
-            "\"พนักงานกดบันทึกการชำระเงิน (PAYMENT_ENTRY) แล้วหมุนค้าง สุดท้ายขึ้น error "
-            "ลูกค้าที่โอนเงินมาแล้วยังขึ้นว่าค้างจ่าย เป็นแบบนี้ตั้งแต่เช้า\"\n\n"
-            "งานของคุณ: ทำให้บันทึกการชำระเงินได้ตามปกติ โดยไม่ลบข้อมูล "
-            "และระวังอย่าไปจัดการ session ของพนักงานที่ไม่ใช่ต้นเหตุ"
-        ),
-        (
-            "Ticket #5390 from Finance (urgent):\n"
+    story = ("Ticket #5390 from Finance (urgent):\n"
             "\"When staff save a payment (PAYMENT_ENTRY) it just spins and finally errors out. "
             "Customers who already paid still show as outstanding. It's been like this since this morning.\"\n\n"
             "Your job: get payment entry working normally again without deleting any data, "
-            "and be careful not to touch the sessions of staff who aren't the cause."
-        ),
-    )
+            "and be careful not to touch the sessions of staff who aren't the cause.")
     hints = [
-        L(
-            "ORA-30006 หรือ ORA-00054 แปลว่าแอปรอ lock นานเกินที่ตั้งไว้ คำถามคือใครถือ lock แถวนั้นอยู่",
-            "ORA-30006 or ORA-00054 means the app waited for a lock longer than it allows. "
+        "ORA-30006 or ORA-00054 means the app waited for a lock longer than it allows. "
             "The question is who holds the lock on those rows.",
-        ),
-        L(
-            "ใน v$session ดูคอลัมน์ event และ blocking_session ของ session ที่รอ 'enq: TX - row lock contention'",
-            "In v$session, look at the event and blocking_session columns of the sessions waiting on "
+        "In v$session, look at the event and blocking_session columns of the sessions waiting on "
             "'enq: TX - row lock contention'",
-        ),
-        L(
-            "session ต้นเหตุไม่ได้ทำงานอะไรอยู่ (INACTIVE) แต่มี transaction ค้างไว้ ดู module และ last_call_et "
-            "แล้วจัดการด้วย alter system kill session 'sid,serial#'",
-            "The culprit session isn't doing anything (INACTIVE) but has an open transaction. Check module "
+        "The culprit session isn't doing anything (INACTIVE) but has an open transaction. Check module "
             "and last_call_et, then deal with it using alter system kill session 'sid,serial#'",
-        ),
     ]
-    solution = L(
-        (
-            "สาเหตุ: batch ADJUST_BATCH แก้ข้อมูลบัญชี 50 รายการแล้วไม่ commit ทิ้ง transaction ค้างไว้ "
-            "แถวพวกนั้นจึงถูก lock ทุกคนที่จะบันทึกการชำระเงินเข้าบัญชีเหล่านั้นต้องรอจนหมดเวลา\n\n"
-            "วิธีหาต้นเหตุ:\n"
-            "  select sid, serial#, username, module, status, last_call_et, blocking_session, event\n"
-            "  from v$session where username = 'SHOP' order by blocking_session nulls first;\n"
-            "  -- session ที่ไม่มีใคร block แต่คนอื่น blocking_session ชี้มาหา คือต้นเหตุ\n\n"
-            "วิธีแก้:\n"
-            "  alter system kill session '<sid>,<serial#>' immediate;\n\n"
-            "เรื่องที่ DBA อาวุโสจะทำต่อ: ก่อน kill ในระบบจริงต้องถามเจ้าของ batch ก่อน และดูว่า transaction ใหญ่แค่ไหน "
-            "เพราะ kill แล้ว Oracle ต้อง rollback ซึ่งอาจนานพอๆ กับเวลาที่มันทำมา "
-            "แล้วแก้ที่ต้นเหตุ ให้ batch commit เป็นช่วงๆ และตั้ง timeout ให้ session ที่ค้างโดยไม่ทำงาน"
-        ),
-        (
-            "Cause: the ADJUST_BATCH job updated 50 accounts and never committed, leaving the transaction open. "
+    solution = ("Cause: the ADJUST_BATCH job updated 50 accounts and never committed, leaving the transaction open. "
             "Those rows stay locked, so anyone saving a payment to those accounts waits until they time out.\n\n"
             "Finding the culprit:\n"
             "  select sid, serial#, username, module, status, last_call_et, blocking_session, event\n"
@@ -79,9 +42,7 @@ class LockContention(Scenario):
             "  alter system kill session '<sid>,<serial#>' immediate;\n\n"
             "What a senior DBA does next: on a real system, check with the batch owner before killing it and see how big "
             "the transaction is, because after a kill Oracle has to roll it back, which can take about as long as the work took. "
-            "Then fix the root cause: have the batch commit in chunks, and set a timeout for sessions that sit idle."
-        ),
-    )
+            "Then fix the root cause: have the batch commit in chunks, and set a timeout for sessions that sit idle.")
     workload_threads = 4          # worker 0 is the batch that holds the lock, 1-3 are clerks
     workload_pause = 2.0
     pause_workload_during_check = False
@@ -206,25 +167,19 @@ class LockContention(Scenario):
     def evaluate(self, m, params, baseline):
         return [
             Criterion(
-                t("ไม่มี session ของแอปถูก block นานเกิน 5 วินาที",
-                  "No app session blocked for more than 5 seconds"),
+                "No app session blocked for more than 5 seconds",
                 m["stuck_sessions"] == 0,
-                t(f"ยังมี {m['stuck_sessions']} session ที่รอ lock อยู่",
-                  f"{m['stuck_sessions']} session(s) still waiting on a lock") if m["stuck_sessions"] else "",
+                f"{m['stuck_sessions']} session(s) still waiting on a lock" if m["stuck_sessions"] else "",
             ),
             Criterion(
-                t("บัญชีที่มีปัญหาบันทึกการชำระเงินได้แล้ว",
-                  "Affected accounts can take payments again"),
+                "Affected accounts can take payments again",
                 m["lock_error"] is None,
                 m["lock_error"] or "",
             ),
             Criterion(
-                t("ไม่ได้ kill session ของพนักงานที่ไม่ใช่ต้นเหตุ",
-                  "No innocent staff sessions were killed"),
+                "No innocent staff sessions were killed",
                 m["clerks_reconnected"] == 0,
-                t(f"มี session PAYMENT_ENTRY {m['clerks_reconnected']} ตัวที่ถูก kill แล้วต่อใหม่ "
-                  "(ในระบบจริงงานที่พนักงานกำลังบันทึกจะหาย)",
-                  f"{m['clerks_reconnected']} PAYMENT_ENTRY session(s) were killed and reconnected "
+                (f"{m['clerks_reconnected']} PAYMENT_ENTRY session(s) were killed and reconnected "
                   "(on a real system, whatever the clerk was entering would be lost)")
                 if m["clerks_reconnected"] else "",
             ),

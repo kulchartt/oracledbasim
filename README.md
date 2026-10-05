@@ -1,7 +1,5 @@
 # dbasim — learn to fix Oracle from real incidents
 
-[ภาษาไทย](https://github.com/kulchartt/oracledbasim/blob/main/README.th.md)
-
 dbasim plants a "the database is broken" incident in Oracle Database Free on your own computer.
 A simulated app keeps using it the whole time. You find the cause, fix it, and dbasim checks
 whether your fix really worked.
@@ -56,7 +54,6 @@ dbasim doctor
 | `dbasim hint` | Get a hint (-15 points each) |
 | `dbasim check` | Check your fix; once solved you see a senior DBA's write-up |
 | `dbasim solution --yes` | Give up and see the solution (0 points) |
-| `dbasim lang th` / `en` | Switch language: English is the default (or set `DBASIM_LANG`) |
 | `dbasim reset` | Remove everything dbasim created and undo settings the scenarios invite you to change |
 
 Use any tool you like: SQL*Plus, SQLcl, SQL Developer, connected as SYSTEM to `FREEPDB1`.

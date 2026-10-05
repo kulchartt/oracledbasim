@@ -9,7 +9,6 @@ player never has to edit code:
 import os
 import time
 
-from .i18n import t
 
 try:
     import oracledb
@@ -44,10 +43,7 @@ def scale():
 def admin_connect():
     c = config()
     if not c["admin_password"]:
-        raise SetupError(t(
-            "ยังไม่ได้ตั้ง DBASIM_ADMIN_PASSWORD (รหัสผ่าน SYSTEM ที่ใช้ตอนสร้าง container)",
-            "DBASIM_ADMIN_PASSWORD is not set (the SYSTEM password you gave the container)",
-        ))
+        raise SetupError("DBASIM_ADMIN_PASSWORD is not set (the SYSTEM password you gave the container)")
     return oracledb.connect(user=c["admin_user"], password=c["admin_password"], dsn=c["dsn"])
 
 
@@ -103,20 +99,12 @@ def rows(conn, sql, params=None):
 def assert_safe_target(admin):
     banner = scalar(admin, "select banner from v$version where rownum = 1") or ""
     if "Free" not in banner and os.environ.get("DBASIM_ALLOW_NON_FREE") != "1":
-        raise SetupError(t(
-            "DB นี้ไม่ใช่ Oracle Database Free:\n  " + banner + "\n"
-            "dbasim จะสร้างและลบ object ใน DB จึงยอมให้รันกับ Oracle Free ในเครื่องตัวเองเท่านั้น "
-            "ห้ามชี้ไปที่ DB ของที่ทำงานเด็ดขาด",
-            "This database is not Oracle Database Free:\n  " + banner + "\n"
+        raise SetupError("This database is not Oracle Database Free:\n  " + banner + "\n"
             "dbasim creates and drops objects, so it only runs against Oracle Free on your own computer. "
-            "Never point it at a database at work.",
-        ))
+            "Never point it at a database at work.")
     con = scalar(admin, "select sys_context('USERENV','CON_NAME') from dual")
     if con == "CDB$ROOT":
-        raise SetupError(t(
-            "ตอนนี้ต่อเข้า CDB$ROOT อยู่ ให้ตั้ง DBASIM_DSN ไปที่ PDB เช่น localhost:1521/FREEPDB1",
-            "Connected to CDB$ROOT. Point DBASIM_DSN at a PDB, e.g. localhost:1521/FREEPDB1",
-        ))
+        raise SetupError("Connected to CDB$ROOT. Point DBASIM_DSN at a PDB, e.g. localhost:1521/FREEPDB1")
     return banner, con
 
 
@@ -136,12 +124,8 @@ def drop_shop_user(admin):
         {"u": SHOP_USER},
     )
     if not marker:
-        raise SetupError(t(
-            f"มี user {SHOP_USER} อยู่แล้วแต่ไม่ได้สร้างโดย dbasim จึงไม่ลบให้ "
-            "ถ้าแน่ใจว่าไม่ใช้ ให้ลบเองด้วย DROP USER SHOP CASCADE",
-            f"User {SHOP_USER} already exists but was not created by dbasim, so it will not be dropped. "
-            "If you are sure it is unused, drop it yourself: DROP USER SHOP CASCADE",
-        ))
+        raise SetupError(f"User {SHOP_USER} already exists but was not created by dbasim, so it will not be dropped. "
+            "If you are sure it is unused, drop it yourself: DROP USER SHOP CASCADE")
     # logon/schema triggers other users created ON the SHOP schema (s05 invites one)
     for owner, name in rows(
         admin,
@@ -181,10 +165,7 @@ def drop_lab_temp_tablespace(admin):
     )]
     # ours if empty or at least one file carries our tag (players may add their own files)
     if files and not any(FILE_TAG in f for f in files):
-        raise SetupError(t(
-            f"มี tablespace {LAB_TEMP_TS} ที่ไม่ได้สร้างโดย dbasim จึงไม่ลบให้",
-            f"Tablespace {LAB_TEMP_TS} was not created by dbasim, so it will not be dropped",
-        ))
+        raise SetupError(f"Tablespace {LAB_TEMP_TS} was not created by dbasim, so it will not be dropped")
     run(admin, f"drop tablespace {LAB_TEMP_TS} including contents and datafiles",
         ignore=(ORA_TS_NOT_EXIST,))
 

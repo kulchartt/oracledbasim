@@ -2,7 +2,6 @@ import random
 import time
 
 from .. import db
-from ..i18n import L, t
 from ..scenario import Criterion, Scenario, integrity_criterion
 
 # The "application" glues the id into the SQL text instead of using a bind variable
@@ -19,50 +18,23 @@ STATS = (
 
 class HardParse(Scenario):
     id = "s05"
-    title = L("CPU พุ่งหลังปล่อยแอปเวอร์ชันใหม่", "CPU spikes after a new app release")
-    difficulty = L("กลาง", "Medium")
+    title = "CPU spikes after a new app release"
+    difficulty = "Medium"
     premium = True
-    story = L(
-        "Ticket #5412 จากทีม Infra:\n"
-        "\"หลังทีม dev ปล่อยแอปร้านค้าเวอร์ชันใหม่ CPU ของ DB สูงตลอดวัน หน้าค้นหาสินค้า "
-        "(PRODUCT_LOOKUP) ช้าลงทั้งระบบ แต่ไล่ดูแล้วไม่เจอ SQL ตัวไหนช้าเป็นพิเศษ "
-        "ทีม dev แก้โค้ดได้อีกทีใน sprint หน้า คือ 2 สัปดาห์\"\n\n"
-        "งานของคุณ: ลดภาระที่ทำให้ CPU สูง โดยไม่แก้โค้ดแอปและไม่ลบข้อมูล",
-        "Ticket #5412 from the Infra team:\n"
+    story = ("Ticket #5412 from the Infra team:\n"
         "\"Since dev shipped the new version of the shop app, DB CPU has been pegged all day. "
         "Product search (PRODUCT_LOOKUP) is slow across the board, but we can't find any single "
         "slow SQL. Dev can't change the code until next sprint, which is 2 weeks out.\"\n\n"
-        "Your task: cut the load that is driving CPU up, without changing app code or deleting data",
-    )
+        "Your task: cut the load that is driving CPU up, without changing app code or deleting data")
     hints = [
-        L("SQL แต่ละตัวเร็ว แต่จำนวนครั้งที่ Oracle ต้อง parse ใหม่อาจสูงผิดปกติ "
-          "ลองเทียบ 'parse count (hard)' กับ 'execute count' ใน v$sysstat",
-          "Each SQL is fast, but the number of times Oracle has to parse from scratch may be abnormal. "
-          "Compare 'parse count (hard)' with 'execute count' in v$sysstat"),
-        L("ใน v$sql ลองหา SQL ที่หน้าตาเหมือนกันแต่ต่างแค่ตัวเลข "
+        "Each SQL is fast, but the number of times Oracle has to parse from scratch may be abnormal. "
+          "Compare 'parse count (hard)' with 'execute count' in v$sysstat",
+        "In v$sql, look for statements that are identical except for a literal number "
           "(group by force_matching_signature having count(*) > 100)",
-          "In v$sql, look for statements that are identical except for a literal number "
-          "(group by force_matching_signature having count(*) > 100)"),
-        L("แก้โค้ดให้ใช้ bind variable ไม่ได้ แต่มี parameter ที่ให้ Oracle แปลงค่าคงที่ใน SQL "
-          "เป็น bind ให้อัตโนมัติ",
-          "You can't change the code to use bind variables, but there is a parameter that makes Oracle "
-          "turn literals in SQL into binds automatically"),
+        "You can't change the code to use bind variables, but there is a parameter that makes Oracle "
+          "turn literals in SQL into binds automatically",
     ]
-    solution = L(
-        "สาเหตุ: แอปต่อ product_id เข้าไปในข้อความ SQL ตรงๆ ทุกครั้งที่ค้นหาจึงเป็น SQL \"ใหม่\" "
-        "Oracle ต้องวิเคราะห์และสร้าง plan ใหม่ทุกครั้ง (hard parse) ซึ่งกิน CPU และ shared pool "
-        "แม้ตัว SQL จะเร็ว ทำเป็นพันครั้งต่อนาทีก็หนัก\n\n"
-        "วิธีแก้ชั่วคราว (เฉพาะ user ของแอป ไม่กระทบระบบอื่น):\n"
-        "  create or replace trigger system.shop_cursor_sharing\n"
-        "  after logon on shop.schema\n"
-        "  begin execute immediate 'alter session set cursor_sharing = force'; end;\n"
-        "  /\n"
-        "หรือแบบทั้งระบบ: alter system set cursor_sharing = force;\n"
-        "(แบบ trigger มีผลกับ session ที่ต่อใหม่เท่านั้น ส่วนแบบ alter system มีผลทันที)\n\n"
-        "เรื่องที่ DBA อาวุโสจะทำต่อ: cursor_sharing = force เป็นแค่ยาแก้ปวด "
-        "มันทำให้ SQL ที่ควรได้ plan ต่างกันตามค่า มาใช้ plan เดียวกันได้ "
-        "ต้องให้ dev แก้ไปใช้ bind variable แล้วถอดออกทันที",
-        "Cause: the app concatenates product_id straight into the SQL text, so every search is a \"new\" SQL. "
+    solution = ("Cause: the app concatenates product_id straight into the SQL text, so every search is a \"new\" SQL. "
         "Oracle has to analyze it and build a fresh plan every time (hard parse), which burns CPU and shared pool. "
         "Each SQL is fast, but thousands per minute add up\n\n"
         "Temporary fix (app user only, no impact on anything else):\n"
@@ -74,8 +46,7 @@ class HardParse(Scenario):
         "(The trigger only affects new sessions; alter system takes effect immediately)\n\n"
         "What a senior DBA does next: cursor_sharing = force is just a painkiller. "
         "It can force SQL that should get different plans for different values onto a single plan. "
-        "Get dev to switch to bind variables, then remove it right away",
-    )
+        "Get dev to switch to bind variables, then remove it right away")
     workload_threads = 4
     workload_pause = 0.0
 
@@ -150,21 +121,17 @@ class HardParse(Scenario):
     def evaluate(self, m, params, baseline):
         if m.get("connect_error"):
             return [
-                Criterion(t("แอปยัง login เข้า DB ได้", "App can still log in to the DB"), False,
-                          t(f"logon trigger ทำให้ login ไม่ได้: {m['connect_error']} "
-                            "(ดู error ด้วย select * from dba_errors where type = 'TRIGGER')",
-                            f"The logon trigger blocks login: {m['connect_error']} "
-                            "(see the error with select * from dba_errors where type = 'TRIGGER')")),
+                Criterion("App can still log in to the DB", False,
+                          f"The logon trigger blocks login: {m['connect_error']} "
+                            "(see the error with select * from dba_errors where type = 'TRIGGER')"),
                 integrity_criterion(m["products"], baseline["products"], "SHOP.PRODUCTS"),
             ]
         ratio = m["hard_parses"] / m["runs"]
         return [
             Criterion(
-                t(f"session ใหม่ของแอป hard parse ไม่เกิน {MAX_HARD_RATIO:.0%} ของ SQL ที่รัน",
-                  f"A new app session hard parses at most {MAX_HARD_RATIO:.0%} of the SQL it runs"),
+                f"A new app session hard parses at most {MAX_HARD_RATIO:.0%} of the SQL it runs",
                 ratio <= MAX_HARD_RATIO,
-                t(f"วัดได้ {m['hard_parses']} จาก {m['runs']} ครั้ง ({ratio:.0%})",
-                  f"Measured {m['hard_parses']} of {m['runs']} runs ({ratio:.0%})"),
+                f"Measured {m['hard_parses']} of {m['runs']} runs ({ratio:.0%})",
             ),
             integrity_criterion(m["products"], baseline["products"], "SHOP.PRODUCTS"),
         ]

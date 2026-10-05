@@ -74,8 +74,6 @@ class FakeConn:
 def env(tmp_path, monkeypatch):
     monkeypatch.setenv("DBASIM_HOME", str(tmp_path))
     monkeypatch.setenv("DBASIM_ADMIN_PASSWORD", "x")
-    monkeypatch.delenv("DBASIM_LANG", raising=False)
-    state.save({**state.load(), "lang": "th"})  # these tests assert on the Thai copy; English is the default
     monkeypatch.setattr(cli, "_launch_workload", lambda: 4242)
     return tmp_path
 
@@ -108,14 +106,14 @@ def test_start_s03_runs_setup_and_records_state(env, monkeypatch, capsys):
 def test_refuses_non_free_database(env, monkeypatch, capsys):
     use(monkeypatch, FakeConn(banner="Oracle Database 19c Enterprise Edition Release 19.0.0.0.0"))
     assert cli.main(["start", "s01"]) == 1
-    assert "ไม่ใช่ Oracle Database Free" in capsys.readouterr().out
+    assert "is not Oracle Database Free" in capsys.readouterr().out
 
 
 def test_refuses_to_drop_foreign_shop_user(env, monkeypatch, capsys):
     conn = use(monkeypatch, FakeConn(shop_exists=1, marker=0))
     assert cli.main(["start", "s01"]) == 1
     assert not any(s.startswith("drop user") for s in conn.log)
-    assert "ไม่ได้สร้างโดย dbasim" in capsys.readouterr().out
+    assert "was not created by dbasim" in capsys.readouterr().out
 
 
 def test_drops_own_shop_user(env, monkeypatch):
@@ -137,14 +135,14 @@ def test_hints_then_check_pass(env, monkeypatch, capsys):
     cli.main(["start", "s01"])
     cli.main(["hint"])
     out = capsys.readouterr().out
-    assert "คำใบ้ 1/3" in out
+    assert "Hint 1/3" in out
 
     from dbasim.scenarios import get
     from dbasim.scenario import Criterion
     monkeypatch.setattr(type(get("s01")), "check", lambda self, *a: [Criterion("ok", True)])
     assert cli.main(["check"]) == 0
     out = capsys.readouterr().out
-    assert "คะแนน 85" in out
+    assert "Score 85" in out
     st = state.load()
     assert st["history"][0]["score"] == 85
     assert st["active"]["workload_pid"] is None
@@ -199,7 +197,7 @@ def test_s04_check_refuses_when_app_stopped(env, pro, monkeypatch, capsys):
     cli.main(["start", "s04"])
     capsys.readouterr()
     assert cli.main(["check"]) == 1
-    assert "แอปจำลองไม่ได้ทำงาน" in capsys.readouterr().out
+    assert "The simulated app is not running" in capsys.readouterr().out
 
 
 def test_s04_check_keeps_app_running(env, pro, monkeypatch):

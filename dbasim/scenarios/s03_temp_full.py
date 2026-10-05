@@ -1,7 +1,6 @@
 import time
 
 from .. import db
-from ..i18n import L, t
 from ..scenario import Criterion, Scenario, integrity_criterion
 
 BATCH = (
@@ -28,58 +27,25 @@ def run_batch(conn):
 
 class TempFull(Scenario):
     id = "s03"
-    title = L("Batch กลางคืนล้มทุกคืน", "The nightly batch fails every night")
-    difficulty = L("ง่าย", "Easy")
-    story = L(
-        (
-            "Ticket #5233 จากทีม Operation (ส่งมาตอนตี 2):\n"
-            "\"job NIGHTLY_BATCH ล้มอีกแล้ว ดู log ได้ด้วย dbasim logs ช่วยแก้ให้รันผ่านก่อนเช้า "
-            "ไม่งั้น report เช้าจะไม่มีข้อมูล\"\n\n"
-            "งานของคุณ: ทำให้ batch รันผ่าน โดยไม่แก้ SQL ของ batch และไม่ลบข้อมูล"
-        ),
-        (
-            "Ticket #5233 from the Operations team (filed at 2 AM):\n"
+    title = "The nightly batch fails every night"
+    difficulty = "Easy"
+    story = ("Ticket #5233 from the Operations team (filed at 2 AM):\n"
             "\"The NIGHTLY_BATCH job failed again. Logs are in dbasim logs. Please get it running "
             "before morning, or the morning report will have no data.\"\n\n"
-            "Your task: get the batch to run successfully without changing the batch SQL and without deleting data"
-        ),
-    )
+            "Your task: get the batch to run successfully without changing the batch SQL and without deleting data")
     hints = [
-        L(
-            "อ่าน error ใน log ให้ครบทั้งบรรทัด มันบอกชื่อ tablespace ไว้ด้วย",
-            "Read the whole error line in the log - it names the tablespace too",
-        ),
-        L(
-            "ORA-01652 คือพื้นที่ temporary ไม่พอ ลองดูว่า user SHOP ใช้ temporary tablespace ไหน (dba_users)",
-            "ORA-01652 means temporary space ran out. Check which temporary tablespace user SHOP uses (dba_users)",
-        ),
-        L(
-            "ดูขนาดและการตั้ง autoextend ของ tempfile ได้จาก dba_temp_files",
-            "Tempfile sizes and autoextend settings are in dba_temp_files",
-        ),
+        "Read the whole error line in the log - it names the tablespace too",
+        "ORA-01652 means temporary space ran out. Check which temporary tablespace user SHOP uses (dba_users)",
+        "Tempfile sizes and autoextend settings are in dba_temp_files",
     ]
-    solution = L(
-        (
-            "สาเหตุ: user SHOP ถูกตั้งให้ใช้ temporary tablespace TEMP_RPT ซึ่งมีแค่ 8MB และปิด autoextend "
-            "batch ต้อง sort ข้อมูลหลายสิบ MB จึงล้มด้วย ORA-01652\n\n"
-            "วิธีแก้ (เลือกอย่างใดอย่างหนึ่ง):\n"
-            "  alter database tempfile '<path>' resize 500M;\n"
-            "  alter tablespace temp_rpt add tempfile '<path>' size 500M;\n"
-            "  alter user shop temporary tablespace temp;\n\n"
-            "เรื่องที่ DBA อาวุโสจะทำต่อ: ระวังการเปิด autoextend แบบไม่จำกัด เพราะ query ที่เขียนพลาด "
-            "อาจกิน disk จนเต็ม ควรตั้ง maxsize และตั้ง alert เมื่อ temp ใช้เกิน 80%"
-        ),
-        (
-            "Cause: user SHOP is assigned temporary tablespace TEMP_RPT, which is only 8MB with autoextend off. "
+    solution = ("Cause: user SHOP is assigned temporary tablespace TEMP_RPT, which is only 8MB with autoextend off. "
             "The batch needs to sort tens of MB, so it fails with ORA-01652\n\n"
             "Fix (pick one):\n"
             "  alter database tempfile '<path>' resize 500M;\n"
             "  alter tablespace temp_rpt add tempfile '<path>' size 500M;\n"
             "  alter user shop temporary tablespace temp;\n\n"
             "What a senior DBA does next: be careful with unlimited autoextend - one badly written query "
-            "can fill the disk. Set a maxsize and alert when temp usage passes 80%"
-        ),
-    )
+            "can fill the disk. Set a maxsize and alert when temp usage passes 80%")
     workload_threads = 1
     workload_pause = 30.0
 
@@ -152,7 +118,7 @@ class TempFull(Scenario):
     def evaluate(self, m, params, baseline):
         return [
             Criterion(
-                t("NIGHTLY_BATCH รันจนจบโดยไม่ error", "NIGHTLY_BATCH runs to completion without errors"),
+                "NIGHTLY_BATCH runs to completion without errors",
                 m["batch_error"] is None,
                 m["batch_error"] or "",
             ),

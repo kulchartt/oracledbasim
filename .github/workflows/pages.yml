@@ -1,4 +1,4 @@
-# Publishes landing/ (EN at /, TH at /th/; /en/ redirects to /) to GitHub Pages:
+# Publishes landing/ (the old /en/ URL redirects to /) to GitHub Pages:
 # https://kulchartt.github.io/oracledbasim/
 name: pages
 

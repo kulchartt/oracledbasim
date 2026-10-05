@@ -31,12 +31,11 @@ def test_s01_fails_on_full_scan():
     assert [c.passed for c in r] == [False, False, True]
 
 
-def test_s01_rejects_deleting_rows(monkeypatch):
-    monkeypatch.setenv("DBASIM_LANG", "th")  # asserts on the Thai copy
+def test_s01_rejects_deleting_rows():
     gone = {"count": 10, "checksum": 55}
     r = get("s01").evaluate(s01_metrics(orders=gone), {}, {"orders": FP})
     assert not passed(r)
-    assert "ห้าม" in r[-1].detail
+    assert "do not fix the problem by deleting" in r[-1].detail
 
 
 # ---- s02 stale stats ------------------------------------------------------
