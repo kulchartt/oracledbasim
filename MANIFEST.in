@@ -1,0 +1,7 @@
+# Only the package, its READMEs and the licence go into the source distribution.
+# Never ship: .oracle-password, selftest-*.txt, SELLING.md (store setup), landing/, tests/
+include README.md README.en.md LICENSE
+prune tests
+prune landing
+exclude SELLING.md run-selftest.bat run-selftest.ps1 .oracle-password selftest-*.txt
+global-exclude *.py[cod] __pycache__

@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbasim"
+version = "0.3.0"
+description = "Oracle DBA break-fix simulator: inject real-world incidents into your own Oracle Free and get graded on the fix"
+readme = "README.en.md"
+requires-python = ">=3.9"
+license = "LicenseRef-Proprietary"
+license-files = ["LICENSE"]
+authors = [{ name = "Kulchart Tunyuwattana" }]
+keywords = ["oracle", "dba", "database", "training", "troubleshooting", "sql"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Natural Language :: Thai",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Database",
+    "Topic :: Education",
+]
+dependencies = ["oracledb>=2.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+dbasim = "dbasim.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["dbasim*"]
