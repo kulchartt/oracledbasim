@@ -60,6 +60,20 @@ Use any tool you like: SQL*Plus, SQLcl, SQL Developer, connected as SYSTEM to `F
 Every scenario can be solved with what Oracle Free ships (`v$` views, `DBMS_XPLAN`, trace).
 No AWR/ASH needed.
 
+## Troubleshooting
+
+`dbasim doctor` checks the whole chain (Docker, the container, the database, the password) and
+tells you which link is broken. The usual ones:
+
+| Symptom | Fix |
+| --- | --- |
+| Docker Desktop (Windows/macOS) shows "An unexpected error occurred" mentioning `engine.sock` | Click **Quit**, open Docker Desktop again; it normally starts on the second try. Do **not** choose "Reset to factory defaults": that deletes the Oracle container and you would download it again. To avoid it, quit Docker Desktop before shutting the computer down. |
+| "Docker engine is not running" | Open Docker Desktop and wait for "Engine running". |
+| "container is stopped" (after a reboot) | `docker start dbasim-oracle`, wait about 30 seconds. |
+| "database is still starting" | First start takes several minutes: `docker logs -f dbasim-oracle` until `DATABASE IS READY TO USE`. |
+| "Oracle rejected the SYSTEM password" | `DBASIM_ADMIN_PASSWORD` must be the `ORACLE_PWD` you gave `docker run`. |
+| Everything is slow or the container restarts | Give Docker at least 3GB of memory (Docker Desktop > Settings > Resources) or set `DBASIM_SCALE=0.3`. |
+
 ## Scenarios
 
 | ID | Scenario | Level | Plan |

@@ -255,3 +255,73 @@ def test_selftest_reports_ok_and_fail(env, monkeypatch, capsys):
     monkeypatch.setattr(type(get("s01")), "check", lambda self, *a: [Criterion("x", True)])
     assert cli.main(["selftest", "s01", "--warmup", "0"]) == 2
     assert "problem did not reproduce" in capsys.readouterr().out
+
+
+# ---- connection diagnosis ---------------------------------------------------
+
+class _DriverError(Exception):
+    """Shaped like oracledb.DatabaseError: args[0] carries .code and .full_code."""
+    def __init__(self, code, full_code, message):
+        err = type("E", (), {"code": code, "full_code": full_code})()
+        super().__init__(err)
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
+def _unreachable(*a, **k):
+    raise _DriverError(0, "DPY-6005", "DPY-6005: cannot connect to database [WinError 10061] refused")
+
+
+def test_doctor_explains_when_docker_engine_is_down(env, monkeypatch, capsys):
+    monkeypatch.setattr(db, "admin_connect", _unreachable)
+    monkeypatch.setattr("shutil.which", lambda name: "C:/docker.exe")
+    monkeypatch.setattr(cli, "_docker", lambda *args, **kw: (False, "error during connect"))
+    assert cli.main(["doctor"]) == 1
+    out = capsys.readouterr().out
+    assert "Could not connect to Oracle" in out and "engine is not running" in out
+    assert "Reset to factory defaults" in out and "Traceback" not in out
+
+
+def test_doctor_explains_when_container_is_stopped(env, monkeypatch, capsys):
+    monkeypatch.setattr(db, "admin_connect", _unreachable)
+    monkeypatch.setattr("shutil.which", lambda name: "C:/docker.exe")
+    answers = {"info": (True, ""), "ps": (True, "Exited (255) 2 hours ago")}
+    monkeypatch.setattr(cli, "_docker", lambda *args, **kw: answers[args[0]])
+    assert cli.main(["doctor"]) == 1
+    assert "docker start dbasim-oracle" in capsys.readouterr().out
+
+
+def test_doctor_explains_when_database_is_still_starting(env, monkeypatch, capsys):
+    monkeypatch.setattr(db, "admin_connect", _unreachable)
+    monkeypatch.setattr("shutil.which", lambda name: "C:/docker.exe")
+    answers = {"info": (True, ""), "ps": (True, "Up 10 seconds"), "logs": (True, "Starting Oracle Net Listener.")}
+    monkeypatch.setattr(cli, "_docker", lambda *args, **kw: answers[args[0]])
+    assert cli.main(["doctor"]) == 1
+    assert "still starting" in capsys.readouterr().out
+
+
+def test_doctor_explains_missing_docker(env, monkeypatch, capsys):
+    monkeypatch.setattr(db, "admin_connect", _unreachable)
+    monkeypatch.setattr("shutil.which", lambda name: None)
+    assert cli.main(["doctor"]) == 1
+    assert "Docker is not installed" in capsys.readouterr().out
+
+
+def test_wrong_password_is_explained(env, monkeypatch, capsys):
+    def bad_password(*a, **k):
+        raise _DriverError(1017, "ORA-01017", "ORA-01017: invalid credential")
+    monkeypatch.setattr(db, "admin_connect", bad_password)
+    assert cli.main(["start", "s01"]) == 1
+    out = capsys.readouterr().out
+    assert "rejected the SYSTEM password" in out and "Traceback" not in out
+
+
+def test_remote_dsn_gets_a_plain_message(env, monkeypatch, capsys):
+    monkeypatch.setenv("DBASIM_DSN", "dbhost.example:1521/FREEPDB1")
+    monkeypatch.setattr(db, "admin_connect", _unreachable)
+    assert cli.main(["doctor"]) == 1
+    out = capsys.readouterr().out
+    assert "Check DBASIM_DSN" in out and "docker" not in out.lower()
+

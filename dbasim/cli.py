@@ -68,6 +68,64 @@ def _alive(pid):
 
 # ---- commands ---------------------------------------------------------------
 
+# ---- connection diagnosis -------------------------------------------------
+
+DOCKER_RUN = ("docker run -d --name dbasim-oracle -p 1521:1521 -e ORACLE_PWD=<password> "
+              "container-registry.oracle.com/database/free:latest")
+
+
+def _docker(*args, timeout=15):
+    """Run a docker CLI command; returns (ok, output) and never raises."""
+    try:
+        r = subprocess.run(["docker", *args], capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return False, str(exc)
+    return r.returncode == 0, (r.stdout + r.stderr).strip()
+
+
+def _diagnose_connection():
+    """Lines that tell the player why nothing answers at the DSN, from the outside in:
+    Docker installed? engine running? container there? started? database ready?"""
+    import shutil
+    dsn = db.config()["dsn"]
+    host = dsn.split(":")[0].split("/")[0].lower()
+    if host not in ("localhost", "127.0.0.1", "::1", "host.docker.internal"):
+        return [f"Nothing answered at {dsn}. Check DBASIM_DSN and that the database is running."]
+    if not shutil.which("docker"):
+        return ["Docker is not installed (or not on PATH). dbasim needs Oracle Database Free in Docker:",
+                "  https://www.docker.com/products/docker-desktop/  then: " + DOCKER_RUN]
+    ok, _ = _docker("info")
+    if not ok:
+        return ["Docker is installed but the Docker engine is not running.",
+                "  Open Docker Desktop and wait until it says 'Engine running', then try again.",
+                "  If Docker Desktop shows 'An unexpected error occurred' mentioning engine.sock: click Quit,",
+                "  open Docker Desktop again, and it normally starts on the second try.",
+                "  Do NOT choose 'Reset to factory defaults' - that deletes the Oracle container."]
+    ok, status = _docker("ps", "-a", "--filter", "name=^dbasim-oracle$", "--format", "{{.Status}}")
+    if not ok or not status:
+        return ["No Oracle container named dbasim-oracle exists yet. Create it with:", "  " + DOCKER_RUN,
+                "  then wait for 'DATABASE IS READY TO USE' in: docker logs -f dbasim-oracle"]
+    if not status.lower().startswith("up"):
+        return [f"The Oracle container exists but is stopped ({status}). Start it with:",
+                "  docker start dbasim-oracle", "  and try again after about 30 seconds."]
+    ok, logs = _docker("logs", "--tail", "200", "dbasim-oracle", timeout=30)
+    if ok and "DATABASE IS READY TO USE" not in logs:
+        return ["The Oracle container is running but the database is still starting.",
+                "  The first start downloads and configures Oracle and can take several minutes.",
+                "  Watch it with: docker logs -f dbasim-oracle  and wait for 'DATABASE IS READY TO USE'."]
+    return [f"The Oracle container is up, but nothing answered at {dsn}.",
+            "  Check that the container publishes port 1521 (docker port dbasim-oracle) and that",
+            "  DBASIM_DSN matches it. Restarting the container often helps: docker restart dbasim-oracle"]
+
+
+def _explain_failure(kind):
+    if kind == "auth":
+        return ["Oracle rejected the SYSTEM password.",
+                "  DBASIM_ADMIN_PASSWORD must be the ORACLE_PWD you gave the container when you created it."]
+    return _diagnose_connection()
+
+
+
 def cmd_doctor(args):
     c = db.config()
     _say(f"dbasim {__version__}  python {sys.version.split()[0]}")
@@ -438,6 +496,12 @@ def main(argv=None):
         _say(f"{BAD} {exc.args[0] if exc.args else exc}")
         return 1
     except Exception as exc:
+        kind = db.error_kind(exc)
+        if kind:
+            _say(f"{BAD} Could not connect to Oracle: {db.first_line(exc)}")
+            for line in _explain_failure(kind):
+                _say(line)
+            return 1
         if db.ora_code(exc):
             _say(f"{BAD} Oracle error: {db.first_line(exc)}")
             return 1

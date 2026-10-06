@@ -58,6 +58,19 @@ def ora_code(exc):
     return getattr(exc.args[0], "code", None)
 
 
+def error_kind(exc):
+    """Classify a driver exception: "auth" (wrong password), "connect" (no database
+    answering at the DSN), or None for everything else."""
+    err = exc.args[0] if exc.args else None
+    code = getattr(err, "code", None)
+    full = getattr(err, "full_code", "") or ""
+    if code == 1017:
+        return "auth"
+    if full.startswith("DPY-60") or (code and 12150 <= code <= 12699):
+        return "connect"
+    return None
+
+
 def first_line(exc):
     return str(exc).strip().splitlines()[0] if str(exc).strip() else repr(exc)
 
