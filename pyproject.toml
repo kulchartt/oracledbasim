@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dbasim"
-version = "0.3.3"
+version = "0.3.4"
 description = "Oracle DBA break-fix simulator: inject real-world incidents into your own Oracle Free and get graded on the fix"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -25,6 +25,11 @@ classifiers = [
     "Topic :: Education",
 ]
 dependencies = ["oracledb>=2.0"]
+
+[project.urls]
+Homepage = "https://kulchartt.github.io/oracledbasim/"
+Repository = "https://github.com/kulchartt/oracledbasim"
+Issues = "https://github.com/kulchartt/oracledbasim/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
