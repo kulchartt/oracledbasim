@@ -21,8 +21,9 @@ class HardParse(Scenario):
     title = "CPU spikes after a new app release"
     difficulty = "Medium"
     premium = True
-    story = ("Ticket #5412 from the Infra team:\n"
-        "\"Since dev shipped the new version of the shop app, DB CPU has been pegged all day. "
+    story = ("Ticket #5412 from the Infra team, filed {incident_hm} server time:\n"
+        "\"Dev shipped the new version of the shop app at {incident_hm} today, and DB CPU has been pegged "
+        "ever since; it sat below 20% for months before the release. "
         "Product search (PRODUCT_LOOKUP) is slow across the board, but we can't find any single "
         "slow SQL. Dev can't change the code until next sprint, which is 2 weeks out.\"\n\n"
         "Your task: cut the load that is driving CPU up, without changing app code or deleting data")

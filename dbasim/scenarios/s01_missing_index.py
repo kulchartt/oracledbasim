@@ -25,9 +25,10 @@ class MissingIndex(Scenario):
     id = "s01"
     title = "Order search page is slow"
     difficulty = "Easy"
-    story = ("Ticket #4821 from the Call Center team:\n"
-        "\"The open-orders search page (ORDER_SEARCH) is really slow. Every search takes several seconds "
-        "and customers on the line are left waiting. It never used to be like this.\"\n\n"
+    story = ("Ticket #4821 from the Call Center team, filed {incident_hm} server time:\n"
+        "\"The open-orders search page (ORDER_SEARCH) is really slow. It started around {incident_hm} today; "
+        "before that every search came back instantly, as it has for the eight months the page has existed. "
+        "Every search now takes several seconds and customers on the line are left waiting.\"\n\n"
         "Your task: find the cause and make the search page fast again, without changing app code or deleting data")
     hints = [
         "Start by finding the most expensive SQL: query v$sql ordered by buffer_gets, or filter on module ORDER_SEARCH",

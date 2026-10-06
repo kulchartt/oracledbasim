@@ -201,6 +201,8 @@ def cmd_start(args):
 
     admin = db.admin_connect()
     db.assert_safe_target(admin)
+    now = db.db_now(admin)                     # server clock, the one the player sees in v$ views
+    params["incident_date"], params["incident_hm"] = now[:10], now[11:16]
     _say(f"Preparing scenario {scenario.id}: {scenario.title} (may take 1-3 minutes) ...")
     scenario.teardown(admin, params)
     scenario.setup(admin, params)
@@ -208,13 +210,14 @@ def cmd_start(args):
     admin.close()
 
     st["active"] = state.new_active(scenario.id, params, baseline)
+    st["active"]["ticket"] = scenario.ticket(params)
     state.app_log_path().write_text("", encoding="utf-8")
     state.save(st)  # the workload process reads this file, so save before launching it
     st["active"]["workload_pid"] = _launch_workload()
     state.save(st)
 
     _say("\n" + "=" * 64)
-    _say(str(scenario.story))
+    _say(st["active"]["ticket"])
     _say("=" * 64)
     _say("\nThe simulated app is running.  App log: dbasim logs  |  Hint: dbasim hint")
     _say("When you have fixed it, run: dbasim check")
@@ -226,6 +229,15 @@ def _require_active(st):
         _say("No scenario in progress. Use dbasim start <id>")
         return None
     return st["active"]
+
+
+def cmd_ticket(args):
+    st = state.load()
+    active = _require_active(st)
+    if not active:
+        return 1
+    _say(active.get("ticket") or get(active["scenario"]).ticket(active.get("params")))
+    return 0
 
 
 def cmd_status(args):
@@ -505,6 +517,7 @@ def build_parser():
     sp.add_argument("--force", action="store_true")
     sp.set_defaults(fn=cmd_start)
     sub.add_parser("status", help="current scenario status").set_defaults(fn=cmd_status)
+    sub.add_parser("ticket", help="show the current ticket again").set_defaults(fn=cmd_ticket)
     lp = sub.add_parser("logs", help="show the simulated app's log")
     lp.add_argument("-n", type=int, default=30)
     lp.set_defaults(fn=cmd_logs)

@@ -19,9 +19,10 @@ class LockContention(Scenario):
     title = "Payment entry screen hangs"
     difficulty = "Medium"
     premium = True
-    story = ("Ticket #5390 from Finance (urgent):\n"
-            "\"When staff save a payment (PAYMENT_ENTRY) it just spins and finally errors out. "
-            "Customers who already paid still show as outstanding. It's been like this since this morning.\"\n\n"
+    story = ("Ticket #5390 from Finance (urgent), filed {incident_hm} server time:\n"
+            "\"Since about {incident_hm} today, when staff save a payment (PAYMENT_ENTRY) it just spins and "
+            "finally errors out. It worked normally all week until then. Customers who already paid "
+            "still show as outstanding.\"\n\n"
             "Your job: get payment entry working normally again without deleting any data, "
             "and be careful not to touch the sessions of staff who aren't the cause.")
     hints = [

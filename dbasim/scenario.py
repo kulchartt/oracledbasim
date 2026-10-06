@@ -9,6 +9,11 @@ evaluate() is pure Python so the grading rules are unit-testable without Oracle.
 from dataclasses import dataclass
 
 
+class _Keep(dict):
+    def __missing__(self, key):
+        return "{" + key + "}"
+
+
 
 @dataclass
 class Criterion:
@@ -35,6 +40,10 @@ class Scenario:
 
     def make_params(self, rng, scale):
         return {}
+
+    def ticket(self, params=None):
+        """The story with {incident_hm} and friends filled in from the scenario's params."""
+        return str(self.story).format_map(_Keep(params or {}))
 
     def setup(self, admin, params):
         raise NotImplementedError

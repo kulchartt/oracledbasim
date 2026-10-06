@@ -371,3 +371,14 @@ def test_python_dash_m_entry_point():
     import subprocess, sys
     r = subprocess.run([sys.executable, "-m", "dbasim", "--version"], capture_output=True, text=True)
     assert r.returncode == 0 and r.stdout.strip().count(".") == 2
+
+
+def test_start_stamps_the_incident_time_and_ticket_command_replays_it(env, monkeypatch, capsys):
+    use(monkeypatch, FakeConn())
+    assert cli.main(["start", "s01"]) == 0
+    out = capsys.readouterr().out
+    active = state.load()["active"]
+    assert active["params"]["incident_hm"] and active["ticket"] in out
+    assert "{incident_hm}" not in active["ticket"]
+    assert cli.main(["ticket"]) == 0
+    assert capsys.readouterr().out.strip() == active["ticket"].strip()

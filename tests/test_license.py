@@ -177,3 +177,16 @@ def test_every_scenario_has_text():
         texts = [s.title, s.difficulty, s.story, s.solution] + list(s.hints)
         assert all(isinstance(text, str) and text.strip() for text in texts), s.id
         assert len(s.hints) >= 2, s.id
+
+
+def test_every_ticket_states_the_incident_time():
+    from dbasim.scenarios import ALL
+    for s in ALL:
+        assert "{incident_hm}" in s.story, s.id
+        rendered = s.ticket({"incident_hm": "09:15", "incident_date": "2026-10-07"})
+        assert "09:15 server time" in rendered and "{" not in rendered, s.id
+
+
+def test_ticket_keeps_unknown_placeholders_instead_of_crashing():
+    from dbasim.scenarios import get
+    assert "{incident_hm}" in get("s01").ticket({})

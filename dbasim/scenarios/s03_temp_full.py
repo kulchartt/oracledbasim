@@ -29,9 +29,10 @@ class TempFull(Scenario):
     id = "s03"
     title = "The nightly batch fails every night"
     difficulty = "Easy"
-    story = ("Ticket #5233 from the Operations team (filed at 2 AM):\n"
-            "\"The NIGHTLY_BATCH job failed again. Logs are in dbasim logs. Please get it running "
-            "before morning, or the morning report will have no data.\"\n\n"
+    story = ("Ticket #5233 from the Operations team, filed {incident_hm} server time:\n"
+            "\"The NIGHTLY_BATCH job has failed on every run since {incident_hm}; it ran clean every night "
+            "for the past year. Logs are in dbasim logs. Please get it running before morning, "
+            "or the morning report will have no data.\"\n\n"
             "Your task: get the batch to run successfully without changing the batch SQL and without deleting data")
     hints = [
         "Read the whole error line in the log - it names the tablespace too",

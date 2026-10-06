@@ -24,9 +24,10 @@ class StaleStats(Scenario):
     id = "s02"
     title = "Month-end report slow after data migration"
     difficulty = "Easy"
-    story = ("Ticket #5107 from Accounting:\n"
-            "\"Yesterday IT migrated the historical sales data into the new system. Since then the month-end report "
-            "(MONTH_END) has gone from a few seconds to several minutes. We have to close the books tomorrow.\"\n\n"
+    story = ("Ticket #5107 from Accounting, filed {incident_hm} server time:\n"
+            "\"At {incident_hm} today IT finished migrating three years of historical sales data into the new system. "
+            "Since that moment the month-end report (MONTH_END) has gone from a few seconds to several minutes; "
+            "it ran in seconds every month before. We have to close the books tomorrow.\"\n\n"
             "Your job: make the report fast again without changing the report's SQL and without deleting any data.")
     hints = [
         "A lot of data was just loaded. Compare the row count the optimizer believes (num_rows in dba_tables) "

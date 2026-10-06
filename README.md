@@ -55,6 +55,7 @@ Options: `dbasim setup --scale 0.3` makes the scenario data smaller for slow mac
 | `dbasim list` | List scenarios and your scores |
 | `dbasim start s01` | Start a scenario (plants the problem + starts the simulated app) |
 | `dbasim logs` | Read the app's log, like when a ticket comes in |
+| `dbasim ticket` | Show the current ticket again |
 | `dbasim status` | Time spent, score, and the password of user SHOP |
 | `dbasim hint` | Get a hint (-15 points each) |
 | `dbasim check` | Check your fix; once solved you see a senior DBA's write-up |
