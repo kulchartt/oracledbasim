@@ -126,10 +126,34 @@ def _explain_failure(kind):
 
 
 
+def cmd_setup(args):
+    """Save the connection settings once, then check them like `doctor` does."""
+    import getpass
+    cfg = state.load_config()
+    password = (args.password or "").strip()
+    if not password:
+        if not sys.stdin.isatty():
+            raise db.SetupError("No password given. Run: dbasim setup --password <ORACLE_PWD>")
+        password = getpass.getpass("SYSTEM password (the ORACLE_PWD you gave the container): ").strip()
+    if not password:
+        raise db.SetupError("The password cannot be empty")
+    cfg["admin_password"] = password
+    if args.dsn:
+        cfg["dsn"] = args.dsn.strip()
+    if args.scale is not None:
+        cfg["scale"] = max(0.05, args.scale)
+    state.save_config(cfg)
+    _say(f"Saved to {state.config_path()}  (environment variables such as DBASIM_DSN still override it)")
+    _say()
+    return cmd_doctor(args)
+
+
 def cmd_doctor(args):
     c = db.config()
     _say(f"dbasim {__version__}  python {sys.version.split()[0]}")
     _say(f"DSN: {c['dsn']}  user: {c['admin_user']}")
+    if state.config_path().exists():
+        _say(f"settings: {state.config_path()}")
     admin = db.admin_connect()
     banner, con = db.assert_safe_target(admin)
     _say(f"{OK} connected: {banner}")
@@ -468,6 +492,11 @@ def build_parser():
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("doctor", help="check the connection to Oracle Free").set_defaults(fn=cmd_doctor)
+    su = sub.add_parser("setup", help="save the database password (and DSN / data scale) once")
+    su.add_argument("--password", help="SYSTEM password; omitted = asked interactively")
+    su.add_argument("--dsn", help="default localhost:1521/FREEPDB1")
+    su.add_argument("--scale", type=float, help="data size multiplier, e.g. 0.3 on a small laptop")
+    su.set_defaults(fn=cmd_setup)
     sub.add_parser("list", help="list scenarios").set_defaults(fn=cmd_list)
     sp = sub.add_parser("start", help="start a scenario")
     sp.add_argument("id")

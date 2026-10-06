@@ -1,9 +1,9 @@
-"""Connection helpers. All settings come from environment variables so the
-player never has to edit code:
+"""Connection helpers. Settings come from `dbasim setup` (saved in ~/.dbasim/config.json)
+or from environment variables, which override the saved file:
 
   DBASIM_DSN             default localhost:1521/FREEPDB1
   DBASIM_ADMIN_USER      default system
-  DBASIM_ADMIN_PASSWORD  required (the ORACLE_PWD you gave the container)
+  DBASIM_ADMIN_PASSWORD  the ORACLE_PWD you gave the container
   DBASIM_SCALE           row-count multiplier, default 1.0 (use 0.2 on small laptops)
 """
 import os
@@ -26,24 +26,28 @@ class SetupError(Exception):
 
 
 def config():
+    from . import state
+    saved = state.load_config()
     return {
-        "dsn": os.environ.get("DBASIM_DSN", DEFAULT_DSN),
-        "admin_user": os.environ.get("DBASIM_ADMIN_USER", "system"),
-        "admin_password": os.environ.get("DBASIM_ADMIN_PASSWORD"),
+        "dsn": os.environ.get("DBASIM_DSN") or saved.get("dsn") or DEFAULT_DSN,
+        "admin_user": os.environ.get("DBASIM_ADMIN_USER") or saved.get("admin_user") or "system",
+        "admin_password": os.environ.get("DBASIM_ADMIN_PASSWORD") or saved.get("admin_password"),
     }
 
 
 def scale():
+    from . import state
+    raw = os.environ.get("DBASIM_SCALE") or state.load_config().get("scale") or 1.0
     try:
-        return max(0.05, float(os.environ.get("DBASIM_SCALE", "1.0")))
-    except ValueError:
+        return max(0.05, float(raw))
+    except (TypeError, ValueError):
         return 1.0
 
 
 def admin_connect():
     c = config()
     if not c["admin_password"]:
-        raise SetupError("DBASIM_ADMIN_PASSWORD is not set (the SYSTEM password you gave the container)")
+        raise SetupError("No database password saved yet. Run: dbasim setup   (asks once for the SYSTEM password you gave the container)")
     return oracledb.connect(user=c["admin_user"], password=c["admin_password"], dsn=c["dsn"])
 
 

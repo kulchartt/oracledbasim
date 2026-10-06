@@ -34,19 +34,24 @@ between you and Oracle.
 pip install dbasim
 ```
 
-## 3. Configure
+If `dbasim` is "not recognized" afterwards, your Python scripts folder is not on PATH. Either run every command as `python -m dbasim ...` instead of `dbasim ...`, or install with [pipx](https://pipx.pypa.io/) (`pipx install dbasim`), which puts it on PATH for you.
+
+## 3. Configure (once)
 
 ```bash
-export DBASIM_ADMIN_PASSWORD=ChangeMe123          # Windows PowerShell: $env:DBASIM_ADMIN_PASSWORD="ChangeMe123"
-export DBASIM_DSN=localhost:1521/FREEPDB1           # default
-export DBASIM_SCALE=0.3                             # smaller data for slow machines
-dbasim doctor
+dbasim setup
 ```
+
+It asks for the SYSTEM password you gave the container (`ChangeMe123` above), saves it in `~/.dbasim/config.json`, and checks the connection. From then on every command works in any terminal window with nothing to export first.
+
+Options: `dbasim setup --scale 0.3` makes the scenario data smaller for slow machines; `--dsn host:port/service` if Oracle is not on `localhost:1521/FREEPDB1`. The environment variables `DBASIM_ADMIN_PASSWORD`, `DBASIM_DSN` and `DBASIM_SCALE` still work and override the saved file (handy for scripts).
 
 ## 4. Play
 
 | Command | What it does |
 | --- | --- |
+| `dbasim setup` | Save the database password once (`--scale`, `--dsn` optional) |
+| `dbasim doctor` | Check Docker, the container, the database and the password |
 | `dbasim list` | List scenarios and your scores |
 | `dbasim start s01` | Start a scenario (plants the problem + starts the simulated app) |
 | `dbasim logs` | Read the app's log, like when a ticket comes in |
@@ -81,6 +86,8 @@ tells you which link is broken. The usual ones:
 | "Docker engine is not running" | Open Docker Desktop and wait for "Engine running". |
 | "container is stopped" (after a reboot) | `docker start dbasim-oracle`, wait about 30 seconds. |
 | "database is still starting" | First start takes several minutes: `docker logs -f dbasim-oracle` until `DATABASE IS READY TO USE`. |
+| `dbasim` is "not recognized" / "command not found" right after `pip install` | The Python scripts folder is not on PATH. Use `python -m dbasim ...`, or `pipx install dbasim`. |
+| "No database password saved yet" | Run `dbasim setup` once. |
 | "Oracle rejected the SYSTEM password" | `DBASIM_ADMIN_PASSWORD` must be the `ORACLE_PWD` you gave `docker run`. |
 | Everything is slow or the container restarts | Give Docker at least 3GB of memory (Docker Desktop > Settings > Resources) or set `DBASIM_SCALE=0.3`. |
 

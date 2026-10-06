@@ -330,3 +330,44 @@ def test_stop_prints_shutdown_tip(env, capsys):
     assert cli.main(["stop"]) == 0
     out = capsys.readouterr().out
     assert "docker stop dbasim-oracle" in out and "Quit Docker Desktop" in out
+
+
+# ---- setup / saved settings ------------------------------------------------
+
+def test_setup_saves_password_and_scale(env, monkeypatch, capsys):
+    monkeypatch.delenv("DBASIM_ADMIN_PASSWORD", raising=False)
+    checks = []
+    monkeypatch.setattr(cli, "cmd_doctor", lambda args: checks.append(1) or 0)
+    assert cli.main(["setup", "--password", "Secret123", "--scale", "0.3"]) == 0
+    assert state.load_config() == {"admin_password": "Secret123", "scale": 0.3}
+    assert db.config()["admin_password"] == "Secret123" and db.scale() == 0.3
+    assert "Saved to" in capsys.readouterr().out and checks == [1]
+
+
+def test_environment_overrides_saved_settings(env, monkeypatch):
+    monkeypatch.delenv("DBASIM_ADMIN_PASSWORD", raising=False)
+    state.save_config({"admin_password": "saved", "dsn": "saved:1521/X", "scale": 0.5})
+    assert db.config()["admin_password"] == "saved" and db.config()["dsn"] == "saved:1521/X"
+    monkeypatch.setenv("DBASIM_ADMIN_PASSWORD", "env")
+    monkeypatch.setenv("DBASIM_DSN", "env:1521/Y")
+    monkeypatch.setenv("DBASIM_SCALE", "0.2")
+    assert db.config()["admin_password"] == "env" and db.config()["dsn"] == "env:1521/Y"
+    assert db.scale() == 0.2
+
+
+def test_missing_password_points_to_setup(env, monkeypatch, capsys):
+    monkeypatch.delenv("DBASIM_ADMIN_PASSWORD", raising=False)
+    assert cli.main(["doctor"]) == 1
+    assert "dbasim setup" in capsys.readouterr().out
+
+
+def test_setup_without_password_and_without_tty_fails_clearly(env, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", type("S", (), {"isatty": lambda self: False})())
+    assert cli.main(["setup"]) == 1
+    assert "--password" in capsys.readouterr().out
+
+
+def test_python_dash_m_entry_point():
+    import subprocess, sys
+    r = subprocess.run([sys.executable, "-m", "dbasim", "--version"], capture_output=True, text=True)
+    assert r.returncode == 0 and r.stdout.strip().count(".") == 2

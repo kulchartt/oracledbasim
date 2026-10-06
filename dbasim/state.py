@@ -32,6 +32,29 @@ def save(state):
     tmp.replace(_path())
 
 
+def config_path():
+    return home() / "config.json"
+
+
+def load_config():
+    """Settings saved by `dbasim setup` (password, dsn, scale). Environment variables override them."""
+    try:
+        data = json.loads(config_path().read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def save_config(cfg):
+    tmp = config_path().with_suffix(".tmp")
+    tmp.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    tmp.replace(config_path())
+    try:
+        os.chmod(config_path(), 0o600)  # the file holds the SYSTEM password of the local lab database
+    except OSError:
+        pass
+
+
 def new_active(scenario_id, params, baseline):
     return {
         "scenario": scenario_id,
