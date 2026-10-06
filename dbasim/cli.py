@@ -167,10 +167,12 @@ def cmd_doctor(args):
 def cmd_list(args):
     st = state.load()
     best = state.best_scores(st)
-    active = (st.get("active") or {}).get("scenario")
+    act = st.get("active") or {}
+    active = act.get("scenario")
+    active_mark = " <- solved, run dbasim reset to clear" if act.get("solved") else " <- playing"
     _say(f"{'ID':<5}{'Level':<8}{'Plan':<6}{'Best':<6}Scenario")
     for s in ALL:
-        mark = " <- playing" if s.id == active else ""
+        mark = active_mark if s.id == active else ""
         score = f"{best[s.id]}" if s.id in best else "-"
         plan = "Pro" if s.premium else "Free"
         _say(f"{s.id:<5}{s.difficulty:<8}{plan:<6}{score:<6}{s.title}{mark}")
