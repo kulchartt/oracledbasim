@@ -290,6 +290,7 @@ def cmd_check(args):
         state.save(st)
         _say(f"\nSolved! Score {entry['score']} in {entry['minutes']} min")
     _say("\n--- How a senior DBA would explain it ---\n" + str(s.solution))
+    _shutdown_tip()
     return 0
 
 
@@ -307,11 +308,21 @@ def cmd_solution(args):
     return 0
 
 
+def _shutdown_tip():
+    """Printed when a session ends; the Docker Desktop engine.sock error comes from
+    shutting the computer down while Docker is still running."""
+    host = db.config()["dsn"].split(":")[0].split("/")[0].lower()
+    if host in ("localhost", "127.0.0.1", "::1"):
+        _say("\nDone for now? Free the memory with: docker stop dbasim-oracle")
+        _say("Quit Docker Desktop before shutting the computer down, or it may fail to start next time.")
+
+
 def cmd_stop(args):
     st = state.load()
     _stop_workload(st.get("active"))
     state.save(st)
     _say("Simulated app stopped")
+    _shutdown_tip()
     return 0
 
 
@@ -325,6 +336,7 @@ def cmd_reset(args):
     st["active"] = None
     state.save(st)
     _say("Scenario cleaned up")
+    _shutdown_tip()
     return 0
 
 

@@ -60,6 +60,16 @@ Use any tool you like: SQL*Plus, SQLcl, SQL Developer, connected as SYSTEM to `F
 Every scenario can be solved with what Oracle Free ships (`v$` views, `DBMS_XPLAN`, trace).
 No AWR/ASH needed.
 
+## When you're done
+
+```bash
+dbasim stop                  # or: dbasim reset   (clears the scenario)
+docker stop dbasim-oracle    # gives the memory back; docker start dbasim-oracle next time
+```
+
+Quit Docker Desktop before shutting the computer down. Shutting down while it is still running is
+what causes its "An unexpected error occurred ... engine.sock" message on the next start.
+
 ## Troubleshooting
 
 `dbasim doctor` checks the whole chain (Docker, the container, the database, the password) and

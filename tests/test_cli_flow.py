@@ -325,3 +325,8 @@ def test_remote_dsn_gets_a_plain_message(env, monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "Check DBASIM_DSN" in out and "docker" not in out.lower()
 
+
+def test_stop_prints_shutdown_tip(env, capsys):
+    assert cli.main(["stop"]) == 0
+    out = capsys.readouterr().out
+    assert "docker stop dbasim-oracle" in out and "Quit Docker Desktop" in out
